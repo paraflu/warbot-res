@@ -26,6 +26,19 @@ module.exports = (robot) ->
   load = (robot) ->
     return robot.brain.get('warspec')
 
+  status = (res, warspec) ->
+    inizio = moment(warspec.start_at)
+    fine_preparativi = moment(warspec.start_at).add(24,'h')
+    fine_war = moment(fine_preparativi).add(24,'h')
+    ora = moment()
+    if (ora < inizio)
+      res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_at).format()}"
+    else if ora < fine_preparativi
+      res.send "E' in corso una war, è il giorno dei preparativi, termina alle #{fine_preparativi.format('LT')}"
+    else if ora < fine_war
+      res.send "E' il giorno degli eroi, ancora #{fine_war.fromNow()}"
+    else
+      res.send "La war è finita alle #{fine_war.format()}"
 
   robot.respond /debug/, (res) ->
     res.send JSON.stringify(load(robot))
@@ -67,8 +80,9 @@ module.exports = (robot) ->
 
   robot.respond /(guerra|war) in (programma|previsione)|(guerra|war) programmata/i, (res) ->
     warspec = load(robot)
+    
     if warspec
-      res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_at).toNow()}"
+      status res, warspec
     else
       res.send "Nessuna war in programma."
 
@@ -86,15 +100,16 @@ module.exports = (robot) ->
     if (!warspec)
       res.send "Non c'è nessuna war avviata."
       return
-
-    preparativi = moment(warspec.start_at).add(24, 'h');
-    warday = moment(preparativi).add(24, 'h')
-    if (moment() < moment(warspec.start_at)) 
-      res.send "La war partirà tra #{moment(warspec.start_date).fromNow()}"
-    else if (moment() < warday) 
-      res.send "E' il giorno dei preparativi, mancano #{preparativi.fromNow()}'"  
-    else 
-      res.send "E' il giorno degli eroi! Ancora #{warday.toNow()}'"
+    
+    status res, warspec
+    # preparativi = moment(warspec.start_at).add(24, 'h');
+    # warday = moment(preparativi).add(24, 'h')
+    # if (moment() < moment(warspec.start_at)) 
+    #   res.send "La war partirà tra #{moment(warspec.start_date).fromNow()}"
+    # else if (moment() < warday) 
+    #   res.send "E' il giorno dei preparativi, mancano #{preparativi.fromNow()}'"  
+    # else 
+    #   res.send "E' il giorno degli eroi! Ancora #{warday.toNow()}'"
 
   robot.hear /ciao/i, (res) ->
     # robot.logger.debug res.message.user
