@@ -49,14 +49,14 @@ module.exports = (robot) ->
     if warspec.strategia
       res.send "Tattica: #{warspec.strategia}"
 
-  robot.hear /.*/, (res) ->
-     # log utenti
-     usrs = robot.brain.get('userlist')
-     if (!usrs) 
-       usrs = []
-     usrs[res.message.user.id] = res.message.user
-     robot.logger.debug "userlist", usrs
-     robot.brain.set 'userlist', usrs
+  # robot.hear /.*/, (res) ->
+  #    # log utenti
+  #    usrs = robot.brain.get('userlist')
+  #    if (!usrs) 
+  #      usrs = []
+  #    usrs[res.message.user.id] = res.message.user
+  #    robot.logger.debug "userlist", usrs
+  #    robot.brain.set 'userlist', usrs
 
   robot.respond /debug/, (res) ->
     res.reply "war data", JSON.stringify(load(robot))
