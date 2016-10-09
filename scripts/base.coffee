@@ -26,13 +26,17 @@ module.exports = (robot) ->
   load = (robot) ->
     return robot.brain.get('warspec')
 
+
+  robot.respond /debug/, (res) ->
+    res.send JSON.stringify(load(robot))
+
   robot.respond /(avvia|programma) (war|guerra) alle (\d+)/i, (res) ->
     warspec = load(robot)
     if warspec
       res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.when).fromNow()}"
     else
-      warspec = { user: res.message.user, when: new Date(), start_at: moment(res.match[1], 'h').toDate() } 
-      res.send "Ok, progammata per le #{moment(warspec.start_at)}!"
+      warspec = { user: res.message.user, when: new Date(), start_at: moment(res.match[3], 'h').toDate() } 
+      res.send "Ok, progammata per le #{moment(warspec.start_at).fromNow()}!"
       save(robot, warspec)
     
   robot.respond /start war|avvia (war|guerra)$|avviamo.*war$/i, (res) ->
@@ -64,7 +68,7 @@ module.exports = (robot) ->
   robot.respond /(guerra|war) in (programma|previsione)|(guerra|war) programmata/i, (res) ->
     warspec = load(robot)
     if warspec
-      res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_at).fromNow()}"
+      res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_at).toNow()}"
     else
       res.send "Nessuna war in programma."
 
