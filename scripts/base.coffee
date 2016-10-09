@@ -2,10 +2,12 @@
 #   Coc war bot
 #
 # Commands:
-#   hubot avvia war - programma una war.
+#   hubot avvia war alle <ora> - programma una war per l'ora indicata.
+#   hubot la strategia è <msg> - archivia un messaggi per la tattica generica
 #   hubot cancella war - cancella una war programmata.
 #   hubot quando vedi <username> digli che <msg> - invia un messaggio quando online
 #   hubot ci sono messaggi - invia i messaggi in segreteria
+#   hubot cancella messaggi - cancella messaggi per me
 
 #   hubot avvisa tutti <messaggio> - invia un `messaggio` a tutti gli utenti. 
 
@@ -53,6 +55,7 @@ module.exports = (robot) ->
      if (!usrs) 
        usrs = []
      usrs[res.message.user.id] = res.message.user
+     robot.logger.debur "userlist", usrs
      robot.brain.set 'userlist', usrs
 
   robot.respond /debug/, (res) ->
@@ -62,7 +65,7 @@ module.exports = (robot) ->
   robot.respond /(avvia|programma) (war|guerra) alle (\d+)/i, (res) ->
     warspec = load(robot)
     if warspec
-      res.reply "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.when).format('LT l')}"
+      res.reply "#{warspec.user.username} la sta avviando..."
     else
       warspec = { user: res.message.user, when: new Date(), start_at: moment(res.match[3], 'h').toDate() } 
       res.reply "Ok, progammata per le #{moment(warspec.start_at).format('LT l')}!"
@@ -74,13 +77,13 @@ module.exports = (robot) ->
       warspec = { user: res.message.user, when: new Date() } 
       res.reply "Ok, quando la lanci?"
     else
-      res.reply "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.start_at).fromNow()}"
+      res.reply "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.start_at).format('LT l')}"
     
   robot.respond /alle (\d+)/i, (res) ->
     warspec = load(robot)
     if (warspec && res.message.user.id == warspec.user.id) 
       warspec.start_at = moment(res.match[1],'h').toDate()
-      res.reply "ok #{res.message.user.username} avviamo alle #{moment(warspec.start_at).format('LT di l')}"
+      res.reply "ok #{res.message.user.username} avviamo alle #{moment(warspec.start_at).format('LT l')}"
       save(robot, warspec)
     else
       res.reply "Nessuna war programmata."
@@ -94,7 +97,7 @@ module.exports = (robot) ->
       warspec = undefined
       robot.brain.remove('warspec')
 
-  robot.respond /(guerra|war) in (programma|previsione)|(guerra|war) programmata/i, (res) ->
+  robot.respond /(guerr[ea]|war) in (programma|previsione|corso)|(guerra|war) programmata/i, (res) ->
     warspec = load(robot)
     
     if warspec
@@ -131,7 +134,7 @@ module.exports = (robot) ->
     warspec.strategia = res.match[1]
     status res, warspec
 
-  robot.respond /strategia?$/, (res) ->
+  robot.respond /strategia\?$/, (res) ->
     warspec = load(robot)
     status res, warspec
 
