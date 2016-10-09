@@ -19,7 +19,7 @@ module.exports = (robot) ->
 
   robot.hear /ciao/i, (res) ->
     robot.logger.debug res
-    res.send "ciao $s{res.sender}"
+    res.send "ciao #{res.sender}"
   # robot.hear /badger/i, (res) ->
   #   res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
   #
