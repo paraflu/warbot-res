@@ -13,16 +13,25 @@
 
 moment = require('moment')
 
+moment.locale('it')
 module.exports = (robot) ->
   lastwar = undefined
 
   warspec = undefined
-  robot.respond /start war|avvia war alle (\d)|avviamo.*war/i, (res) ->
+
+  robot.respond /avvia (war|guerra) alle (\d+)/i, (res) ->
+    if warspec
+      res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.when).fromNow()}"
+    else
+      warspec = { user: res.message.user, when: new Date(), start_at: moment(res.match[3], 'h').toDate() } 
+      res.send "Ok, progammata!"
+    
+  robot.respond /start war|avvia (war|guerra)|avviamo.*war/i, (res) ->
     if !warspec 
       warspec = { user: res.message.user, when: new Date() } 
       res.send "Ok, quando la lanci?"
     else
-      res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.user.when).fromNow()}"
+      res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.when).fromNow()}"
     
   robot.respond /alle (\d+)/i, (res) ->
     if (warspec && res.message.user.id == warspec.user.id) 
@@ -35,6 +44,13 @@ module.exports = (robot) ->
     else 
       res.send "Ok!"
       warspec = undefined
+
+  robot.respond /(guerra|war) in (programma|previsione)/i, (res) ->
+    if warspec
+      res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_atwhen).toNow()}"
+    else
+      res.send "Nessuna war in programma."
+
 
   robot.respond /avvisa tutti che (.*)$/i, (res) ->
     msg = res.match[1]
