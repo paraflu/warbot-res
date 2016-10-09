@@ -131,7 +131,7 @@ module.exports = (robot) ->
     warspec.strategia = res.match[1]
     status res, warspec
 
-  robot respond /strategia?$/, (res) ->
+  robot.respond /strategia?$/, (res) ->
     warspec = load(robot)
     status res, warspec
 
