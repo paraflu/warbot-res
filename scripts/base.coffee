@@ -1,4 +1,4 @@
-# Description:
+//# Description:
 #   Example scripts for you to examine and try out.
 #
 # Notes:
@@ -8,18 +8,42 @@
 #
 #   These are from the scripting documentation: https://github.com/github/hubot/blob/master/docs/scripting.md
 
+moment = require('moment')
+
 module.exports = (robot) ->
+  lastwar = undefined
 
-  robot.hear /start war|avvio war|avviamo.*war/, (res) -> 
-    res.send "Ok, quando la lanci?"
+  warspec = undefined
+  robot.respond /start war|avvi[o|a] war alle (\d)|avviamo.*war/i, (res) ->
+    if !warspec 
+      warspec = { user: res.message.user, when: new Date() } 
+      res.send "Ok, quando la lanci?"
+    else
+      res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.user.when).fromNow()}"
+    
+  robot.respond /alle (\d+)/i, (res) ->
+    if (warspec && res.message.user.id == warspec.user.id) 
+      warspec.start_at = moment(res.match[1],'h').toDate()
+      res.send "ok #{res.message.user.username} avviamo alle #{moment(warspec.start_at).toNow()}"
 
-  robot.respond /avvisa tutti (.*)$/, (res) ->
+  robot.respond /cancella war/i, (res) ->
+    if (!warspec)
+      res.send "non ci sono guerre in programma..."
+    else 
+      res.send "Ok!"
+      warspec = undefined
+
+  robot.respond /avvisa tutti (.*)$/i, (res) ->
     msg = res.match[1]
-    console.log "Il messaggio è {msg}"
+    sender = res.message.user
+    for usr in @robot.brain.data.users
+      robot.logger.debug usr
+
+  
 
   robot.hear /ciao/i, (res) ->
-    robot.logger.debug res
-    res.send "ciao #{res.sender}"
+    # robot.logger.debug res.message.user
+    res.send "ciao #{res.message.user.username}"
   # robot.hear /badger/i, (res) ->
   #   res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
   #
