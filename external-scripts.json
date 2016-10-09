@@ -10,5 +10,5 @@
   "hubot-rules",
   "hubot-shipit",
    "hubot-reload-scripts",
-   "hubot-postgress-brain"
+   "hubot-postgres-brain"
 ]
