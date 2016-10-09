@@ -55,7 +55,7 @@ module.exports = (robot) ->
      if (!usrs) 
        usrs = []
      usrs[res.message.user.id] = res.message.user
-     robot.logger.debur "userlist", usrs
+     robot.logger.debug "userlist", usrs
      robot.brain.set 'userlist', usrs
 
   robot.respond /debug/, (res) ->
