@@ -15,7 +15,6 @@ moment = require('moment')
 
 
 
-
 moment.locale('it')
 module.exports = (robot) ->
   lastwar = undefined
@@ -32,13 +31,13 @@ module.exports = (robot) ->
     fine_war = moment(fine_preparativi).add(24,'h')
     ora = moment()
     if (ora < inizio)
-      res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_at).format()}"
+      res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_at).format('LT di l')}"
     else if ora < fine_preparativi
       res.send "E' in corso una war, è il giorno dei preparativi, termina alle #{fine_preparativi.format('LT')}"
     else if ora < fine_war
       res.send "E' il giorno degli eroi, ancora #{fine_war.fromNow()}"
     else
-      res.send "La war è finita alle #{fine_war.format()}"
+      res.send "La war è finita alle #{fine_war.format('LT di l')}"
 
   robot.respond /debug/, (res) ->
     res.send JSON.stringify(load(robot))
@@ -46,10 +45,10 @@ module.exports = (robot) ->
   robot.respond /(avvia|programma) (war|guerra) alle (\d+)/i, (res) ->
     warspec = load(robot)
     if warspec
-      res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.when).fromNow()}"
+      res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.when).format('LT di l')}"
     else
       warspec = { user: res.message.user, when: new Date(), start_at: moment(res.match[3], 'h').toDate() } 
-      res.send "Ok, progammata per le #{moment(warspec.start_at).fromNow()}!"
+      res.send "Ok, progammata per le #{moment(warspec.start_at).format('LT di l')}!"
       save(robot, warspec)
     
   robot.respond /start war|avvia (war|guerra)$|avviamo.*war$/i, (res) ->
@@ -64,7 +63,7 @@ module.exports = (robot) ->
     warspec = load(robot)
     if (warspec && res.message.user.id == warspec.user.id) 
       warspec.start_at = moment(res.match[1],'h').toDate()
-      res.send "ok #{res.message.user.username} avviamo alle #{moment(warspec.start_at).fromNow()}"
+      res.send "ok #{res.message.user.username} avviamo alle #{moment(warspec.start_at).format('LT di l')}"
       save(robot, warspec)
     else
       res.send "Nessuna war programmata."
@@ -94,6 +93,7 @@ module.exports = (robot) ->
     usrs = robot.brain.get('users')[res.message.room]
     for usr in usrs
       robot.logger.debug "avvisa #{usr.username}"
+      res.send "#{usr.username} > msg from #{sender}"
 
   robot.respond /quanto manca/i, (res) ->
     warspec = load(robot)
