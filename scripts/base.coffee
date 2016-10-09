@@ -31,7 +31,7 @@ module.exports = (robot) ->
     if warspec
       res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.when).fromNow()}"
     else
-      warspec = { user: res.message.user, when: new Date(), start_at: moment(res.match[2], 'h').toDate() } 
+      warspec = { user: res.message.user, when: new Date(), start_at: moment(res.match[1], 'h').toDate() } 
       res.send "Ok, progammata per le #{moment(warspec.start_at)}!"
       save(robot, warspec)
     
