@@ -31,12 +31,12 @@ module.exports = (robot) ->
       warspec = { user: res.message.user, when: new Date() } 
       res.send "Ok, quando la lanci?"
     else
-      res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.when).fromNow()}"
+      res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.start_at).fromNow()}"
     
   robot.respond /alle (\d+)/i, (res) ->
     if (warspec && res.message.user.id == warspec.user.id) 
       warspec.start_at = moment(res.match[1],'h').toDate()
-      res.send "ok #{res.message.user.username} avviamo alle #{moment(warspec.start_at).toNow()}"
+      res.send "ok #{res.message.user.username} avviamo alle #{moment(warspec.start_at).fromNow()}"
 
   robot.respond /cancella war/i, (res) ->
     if (!warspec)
@@ -47,7 +47,7 @@ module.exports = (robot) ->
 
   robot.respond /(guerra|war) in (programma|previsione)/i, (res) ->
     if warspec
-      res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_atwhen).toNow()}"
+      res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_at).fromNow()}"
     else
       res.send "Nessuna war in programma."
 
