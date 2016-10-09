@@ -1,12 +1,15 @@
-//# Description:
-#   Example scripts for you to examine and try out.
+# Description:
+#   Coc war bot
 #
-# Notes:
-#   They are commented out by default, because most of them are pretty silly and
-#   wouldn't be useful and amusing enough for day to day huboting.
-#   Uncomment the ones you want to try and experiment with.
+# Commands:
+#   hubot avvia war - programma una war
+#   hubot cancella war - cancella una war programmata
+#   hubot avvisa tutti <messaggio> - invia un messaggio a tutti gli utenti 
 #
-#   These are from the scripting documentation: https://github.com/github/hubot/blob/master/docs/scripting.md
+# Author:
+#   spajus
+#   vinta
+#   m-seldin
 
 moment = require('moment')
 
@@ -14,7 +17,7 @@ module.exports = (robot) ->
   lastwar = undefined
 
   warspec = undefined
-  robot.respond /start war|avvi[o|a] war alle (\d)|avviamo.*war/i, (res) ->
+  robot.respond /start war|avvia war alle (\d)|avviamo.*war/i, (res) ->
     if !warspec 
       warspec = { user: res.message.user, when: new Date() } 
       res.send "Ok, quando la lanci?"
@@ -33,11 +36,13 @@ module.exports = (robot) ->
       res.send "Ok!"
       warspec = undefined
 
-  robot.respond /avvisa tutti (.*)$/i, (res) ->
+  robot.respond /avvisa tutti che (.*)$/i, (res) ->
     msg = res.match[1]
     sender = res.message.user
-    for usr in @robot.brain.data.users
-      robot.logger.debug usr
+    # robot.logger.debug 'response',res.message.room
+    robot.logger.debug 'brain', robot.brain.data.users[res.message.room]
+    for usr in robot.brain.data.users[res.message.room]
+      robot.logger.debug "avvisa #{usr.username}"
 
   
 
