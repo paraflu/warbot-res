@@ -141,6 +141,10 @@ module.exports = (robot) ->
   robot.respond /status/, (res) ->
     status res, load(robot)
  
+
+  robot.respond /reset/, (res) ->
+    if res.message.user.name == 'paraflu'
+      robot.rabin.remove('userlist')
  
   robot.respond /quando vedi @(\w*) (digli|di|dille) (.*)$/, (res) ->
     segreteria = robot.brain.get('segreteria')
