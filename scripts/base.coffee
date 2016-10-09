@@ -4,7 +4,7 @@
 # Commands:
 #   hubot avvia war - programma una war
 #   hubot cancella war - cancella una war programmata
-#   hubot avvisa tutti <messaggio> - invia un messaggio a tutti gli utenti 
+#   hubot avvisa tutti che 'messaggio' - invia un messaggio a tutti gli utenti 
 #
 # Author:
 #   spajus
@@ -13,20 +13,30 @@
 
 moment = require('moment')
 
+
+
+
 moment.locale('it')
 module.exports = (robot) ->
   lastwar = undefined
 
-  warspec = undefined
+  save = (robot, warspec) ->
+    robot.brain.set('warspec', warspec)
 
-  robot.respond /avvia (war|guerra) alle (\d+)/i, (res) ->
+  load = (robot) ->
+    return robot.brain.get('warspec')
+
+  robot.respond /(avvia|programma) (war|guerra) alle (\d+)/i, (res) ->
+    warspec = load(robot)
     if warspec
       res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.when).fromNow()}"
     else
-      warspec = { user: res.message.user, when: new Date(), start_at: moment(res.match[3], 'h').toDate() } 
-      res.send "Ok, progammata!"
+      warspec = { user: res.message.user, when: new Date(), start_at: moment(res.match[2], 'h').toDate() } 
+      res.send "Ok, progammata per le #{moment(warspec.start_at)}!"
+      save(robot, warspec)
     
-  robot.respond /start war|avvia (war|guerra)|avviamo.*war/i, (res) ->
+  robot.respond /start war|avvia (war|guerra)$|avviamo.*war$/i, (res) ->
+    warspec = load(robot)
     if !warspec 
       warspec = { user: res.message.user, when: new Date() } 
       res.send "Ok, quando la lanci?"
@@ -34,18 +44,25 @@ module.exports = (robot) ->
       res.send "#{warspec.user.username} la sta avviando... messaggio delle #{moment(warspec.start_at).fromNow()}"
     
   robot.respond /alle (\d+)/i, (res) ->
+    warspec = load(robot)
     if (warspec && res.message.user.id == warspec.user.id) 
       warspec.start_at = moment(res.match[1],'h').toDate()
       res.send "ok #{res.message.user.username} avviamo alle #{moment(warspec.start_at).fromNow()}"
+      save(robot, warspec)
+    else
+      res.send "Nessuna war programmata."
 
   robot.respond /cancella war/i, (res) ->
+    warspec = load(robot)
     if (!warspec)
       res.send "non ci sono guerre in programma..."
     else 
       res.send "Ok!"
       warspec = undefined
+      robot.brain.remove('warspec')
 
-  robot.respond /(guerra|war) in (programma|previsione)/i, (res) ->
+  robot.respond /(guerra|war) in (programma|previsione)|(guerra|war) programmata/i, (res) ->
+    warspec = load(robot)
     if warspec
       res.send "C'è la war programmata da #{warspec.user.username} per le #{moment(warspec.start_at).fromNow()}"
     else
@@ -56,11 +73,24 @@ module.exports = (robot) ->
     msg = res.match[1]
     sender = res.message.user
     # robot.logger.debug 'response',res.message.room
-    robot.logger.debug 'brain', robot.brain.data.users[res.message.room]
-    for usr in robot.brain.data.users[res.message.room]
+    usrs = robot.brain.get('users')[res.message.room]
+    for usr in usrs
       robot.logger.debug "avvisa #{usr.username}"
 
-  
+  robot.respond /quanto manca/i, (res) ->
+    warspec = load(robot)
+    if (!warspec)
+      res.send "Non c'è nessuna war avviata."
+      return
+
+    preparativi = moment(warspec.start_at).add(24, 'h');
+    warday = moment(preparativi).add(24, 'h')
+    if (moment() < moment(warspec.start_at)) 
+      res.send "La war partirà tra #{moment(warspec.start_date).fromNow()}"
+    else if (moment() < warday) 
+      res.send "E' il giorno dei preparativi, mancano #{preparativi.fromNow()}'"  
+    else 
+      res.send "E' il giorno degli eroi! Ancora #{warday.toNow()}'"
 
   robot.hear /ciao/i, (res) ->
     # robot.logger.debug res.message.user
