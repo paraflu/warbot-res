@@ -4,7 +4,7 @@
 # Commands:
 #   hubot avvia war - programma una war
 #   hubot cancella war - cancella una war programmata
-#   hubot avvisa tutti che 'messaggio' - invia un messaggio a tutti gli utenti 
+#   hubot avvisa tutti che <messaggio> - invia un messaggio a tutti gli utenti 
 #
 # Author:
 #   spajus
