@@ -278,6 +278,7 @@ module.exports = function (robot) {
         if (wdata) {
             wdata.strategia = res.match[1];
             self.warspec.save(res.message.room, wdata);
+            res.reply("Ok, capito.");
         } else {
             res.reply("Non ho capito.")
         }
