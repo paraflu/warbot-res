@@ -21,7 +21,6 @@ module.exports = (robot) ->
 
   robot.error (err, res) ->
     robot.logger.error err
-
     if res?
       res.reply "Error: #{err}"
 
@@ -69,14 +68,16 @@ module.exports = (robot) ->
   robot.hear /.*/, (res) ->
     usr = res.message.user
     msgs = messaggioper(usr)
-    if !msgs.letto
+    if msgs && !msgs.letto
       msg="";
       for m in msgs
         msg += draw m + "\n"
-      res.reply "`#{msg}`"
-      segreteria = robot.brain.get('segreteria')
-      segreteria[usr.name].letto = true
-      robot.brain.set('segreteria')
+      if (msg != "")
+        res.reply "`#{msg}`"
+        _.map(msgs, (m) -> m.letto = true)
+        segreteria = robot.brain.get('segreteria')
+        segreteria[usr.name].letto = true
+        robot.brain.set('segreteria')
 
   #    # log utenti
   
