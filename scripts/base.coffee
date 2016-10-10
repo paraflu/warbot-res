@@ -39,7 +39,8 @@ module.exports = (robot) ->
   #       });
 
   draw = (msg) ->
-    return "- Messaggio da #{msg.from.name} delle #{moment(msg.when).format('LT l')}: #{msg.msg}."
+    letto = msg.letto ? " " : "*"
+    return "#{letto} Messaggio da #{msg.from.name} delle #{moment(msg.when).format('LT l')}: #{msg.msg}."
 
   status = (res, warspec) ->
     inizio = moment(warspec.start_at)
@@ -60,21 +61,21 @@ module.exports = (robot) ->
 
   messaggioper = (usr) ->
     segreteria = robot.brain.get('segreteria')
-    if (segreteria && segreteria[usr.name] && segreteria[usr.name].length > 0)
-      return segreteria[usr.name] 
+    if (segreteria && segreteria[usr.name] && segreteria[usr.name].messages.length > 0)
+      return segreteria[usr.name]
     else
       return false
 
   robot.hear /.*/, (res) ->
     usr = res.message.user
     msgs = messaggioper(usr)
-    if (msgs && msgs.length > 0)
+    if !msgs.letto
       msg="";
       for m in msgs
         msg += draw m + "\n"
       res.reply "`#{msg}`"
       segreteria = robot.brain.get('segreteria')
-      delete segreteria[usr.name]
+      segreteria[usr.name].letto = true
       robot.brain.set('segreteria')
 
   #    # log utenti
@@ -152,7 +153,7 @@ module.exports = (robot) ->
     msg = "ciao #{res.message.user.username}"
     usr = res.message.user
     segreteria = robot.brain.get('segreteria')
-    if (segreteria && segreteria[usr.name] && segreteria[usr.name].length > 0)
+    if (segreteria && segreteria[usr.name] && !segreteria[usr.name].messages.letto > 0)
       msg += ",ho #{segreteria[usr.name].length} messaggi per te!"
     res.reply msg
 
@@ -181,8 +182,9 @@ module.exports = (robot) ->
     usrname = res.match[1]
     msg = res.match[3]
     if (!segreteria[usrname])
-      segreteria[usrname] = []
-    segreteria[usrname].push {from: res.message.user, msg: msg, when: new Date()}
+      segreteria[usrname] = {letto: true, messages: []}
+    segreteria[usrname].messages.push {from: res.message.user, msg: msg, when: new Date(), letto: false}
+    segreteria[usrname].letto = false;
 
     robot.brain.set('segreteria', segreteria)
     res.reply "Messaggio per #{usrname} archiviato."
@@ -196,12 +198,13 @@ module.exports = (robot) ->
 
     me = res.message.user.name
     robot.logger.debug segreteria[me]
-    if !segreteria[me] || segreteria[me].length == 0
+    if !segreteria[me] || segreteria[me].letto
       res.reply "Nessun messaggio"
       return
 
     for msg in segreteria[me]
       res.reply draw msg
+      msg.letto = true
 
   robot.respond /cancella messaggi/, (res) ->
     segreteria = robot.brain.get('segreteria')
@@ -216,4 +219,4 @@ module.exports = (robot) ->
       return 
 
     res.reply "#{segreteria[me].length} messaggi cancellati."
-    delete segreteria[me] 
+    segreteria[me] = { letto: true, messages: []} 
