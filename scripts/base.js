@@ -11,6 +11,7 @@
 //    hubot avvisa tutti <messaggio> - invia un `messaggio` a tutti gli utenti.
 //    hubot ci sono messaggi - invia i messaggi in segreteria 
 
+`use strict`;
 var hasProp = {}.hasOwnProperty;
 
 var moment = require('moment'),
@@ -147,6 +148,7 @@ module.exports = function (robot) {
     var segreteria = new Segreteria(robot);
     var warspec = new WarSpec(robot);
     var self = this;
+    var uptime = moment();
 
     robot.error(function (err, res) {
         robot.logger.error(err);
@@ -242,6 +244,7 @@ module.exports = function (robot) {
     });
 
     robot.hear(/ciao/i, function (res) {
+        robot.logger.debug(res);
         var msg = "ciao " + res.message.user.name;
         if (segreteria.messageForMe(res.message.user.name)) {
             msg += segreteria.getMessages();
@@ -273,11 +276,15 @@ module.exports = function (robot) {
         }
     });
 
+    robot.respond(/uptime/i, function(res) {
+        res.reply(uptime.format());
+    });
+
     robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/, function (res) {
-        var usrname = res.match[2];
+        var username = res.match[2];
         segreteria.inviaMessaggio(username, res.message.user, res.match[4]);
         segreteria.save();
-        res.reply("Messaggio per " + usrname + " archiviato.");
+        res.reply("Messaggio per " + username + " archiviato.");
     });
 
     robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/, function (res) {
