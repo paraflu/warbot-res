@@ -123,6 +123,10 @@ function WarSpec(robot) {
 
     this.status = function(roomid) {
         var data = warspec[roomid];
+        if (!data) {
+            return "Nessuna war in corso.";
+        }
+        
         var inizio = moment(data.start_at);
         var fine_preparativi = moment(data.start_at).add(24, 'h');
         var fine_war = moment(fine_preparativi).add(24, 'h');
