@@ -18,7 +18,7 @@ var moment = require('moment'),
 
 moment.locale('it');
 
-function self.segreteria(robot)
+function Segreteria(robot)
 {
     var bot = robot;
     var self = this;
