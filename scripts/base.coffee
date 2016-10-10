@@ -6,13 +6,13 @@
 #   hubot la strategia è <msg> - archivia un messaggi per la tattica generica
 #   hubot cancella war - cancella una war programmata.
 #   hubot quando vedi <username> digli che <msg> - invia un messaggio quando online
-#   hubot ci sono messaggi - invia i messaggi in segreteria
 #   hubot cancella messaggi - cancella messaggi per me
 
-#   hubot avvisa tutti <messaggio> - invia un `messaggio` a tutti gli utenti. 
+#   hubot avvisa tutti <messaggio> - invia un `messaggio` a tutti gli utenti.
+#   hubot ci sono messaggi - invia i messaggi in segreteria 
 
 moment = require('moment')
-
+_ = require('lodash')
 
 
 moment.locale('it')
@@ -49,9 +49,24 @@ module.exports = (robot) ->
     if warspec.strategia
       res.send "Tattica: #{warspec.strategia}"
 
-  # robot.hear /.*/, (res) ->
+  messaggioper = (usr) ->
+    segreteria = robot.brain.get('segreteria')
+    if (segreteria && segreteria[usr.name] && segreteria[usr.name].length > 0)
+      return segreteria[usr.name] 
+    else
+      return false
+
+  robot.hear /.*/, (res) ->
+    usr = res.message.user
+    msgs = messaggioper(usr)
+    if msg
+      res.send "`#{_.join(msgs, "\n")}`"
+      segreteria = robot.brain.get('segreteria')
+      delete segreteria[usr.name]
+      robot.brain.set('segreteria')
+
   #    # log utenti
-  #    usrs = robot.brain.get('userlist')
+  
   #    if (!usrs) 
   #      usrs = []
   #    usrs[res.message.user.id] = res.message.user
