@@ -35,6 +35,9 @@ function Segreteria(robot)
     }
 
     this.messageForMe = function(usr) {
+         if (!data) {
+            data = this.load();
+        }
         if (!data || !data[usr.name] || data[usr.name].read) {
             return false;
         }
@@ -42,6 +45,9 @@ function Segreteria(robot)
     }
 
     this.readAll = function(usr) {
+        if (!data) {
+            data = this.load();
+        }
         if (this.messageForMe(usr)) {
             data[usr].read = true;
         }
@@ -63,6 +69,9 @@ function Segreteria(robot)
     };
 
     this.empty = function(username) {
+        if (!data) {
+            data = this.load();
+        }
         if (this.getMessages(username)) {
             delete data[username];
             this.save();
@@ -89,6 +98,9 @@ function Segreteria(robot)
     }
 
     this.toString = function() {
+        if (!data) {
+            data = this.load();
+        }
         return JSON.stringify(data);
     }
 
@@ -113,6 +125,9 @@ function WarSpec(robot) {
     }
 
     this.save = function(id, data) {
+        if (!warspecs) {
+            warspecs = this.load();
+        }
         if (id) {
             warspecs[id] = data;
         }
@@ -125,6 +140,9 @@ function WarSpec(robot) {
     }
 
     this.remove = function(id) {
+        if (!warspecs) {
+            warspecs = this.load();
+        }
         if (warspecs[id]) {
             delete warspecs[id];
             this.save();
@@ -270,7 +288,7 @@ module.exports = function (robot) {
     });
 
     robot.hear(/ciao/i, function (res) {
-        robot.logger.debug(res);
+        // robot.logger.debug(res);
         var msg = "ciao " + res.message.user.name;
         if (self.segreteria.messageForMe(res.message.user.name)) {
             msg += self.segreteria.getMessages(res.message.user.name);
