@@ -106,7 +106,7 @@ function WarSpec(robot) {
             if (!warspecs)
                 warspecs = [];
             bot.logger.debug('warspec.save ' + JSON.stringify(warspecs[roomid]));
-            return warspecs[roomid]
+            return warspecs[roomid];
         } 
     }
 
@@ -114,8 +114,14 @@ function WarSpec(robot) {
         if (id) {
             warspecs[id] = data;
         }
-        bot.brain.set('warspec', warspecs);
-        bot.logger.debug('warspec.save ' + JSON.stringify(warspecs));
+        if (warspecs) {
+            bot.brain.set('warspec', warspecs);
+            bot.logger.debug('warspec.save ' + JSON.stringify(warspecs));    
+        } else {
+            throw new Error("warspec.save nessun dato");
+        }
+        
+        
     }
 
     this.remove = function(id) {
@@ -126,7 +132,7 @@ function WarSpec(robot) {
     }
 
     this.status = function(roomid) {
-        var data = warspec[roomid];
+        var data = warspecs[roomid];
         if (!data) {
             return "Nessuna war in corso.";
         }
