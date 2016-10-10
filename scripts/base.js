@@ -47,7 +47,7 @@ function Segreteria(robot)
     }
 
     this.getMessages = function (user) {
-        var msgs = messageForMe(user);
+        var msgs = this.messageForMe(user);
         if (!msgs)
         {
             return "Nessun messaggio";
@@ -158,7 +158,7 @@ module.exports = function (robot) {
 
     robot.hear(/.*/, function (res) {
         var usr = res.message.user;
-        if (segreteria.messageForMe(usr)) {
+        if (segreteria.messageForMe(usr.name)) {
             res.reply("Ci sono messaggi per te!\n" +  segreteria.getMessages(usr));
         } else {
             // res.reply("Nessun messaggio.");
