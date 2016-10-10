@@ -38,6 +38,9 @@ module.exports = (robot) ->
   #           robot.logger.debug(response);
   #       });
 
+  draw = (msg) ->
+    return "- Messaggio da #{msg.from.name} delle #{moment(msg.when).format('LT l')}: #{msg.msg}."
+
   status = (res, warspec) ->
     inizio = moment(warspec.start_at)
     fine_preparativi = moment(warspec.start_at).add(24,'h')
@@ -66,7 +69,10 @@ module.exports = (robot) ->
     usr = res.message.user
     msgs = messaggioper(usr)
     if (msgs && msgs.length > 0)
-      res.send "`#{_.join(msgs, "\n")}`"
+      msg="";
+      for m in msgs
+        msg += draw m + "\n"
+      res.reply "`#{msg}`"
       segreteria = robot.brain.get('segreteria')
       delete segreteria[usr.name]
       robot.brain.set('segreteria')
@@ -80,8 +86,7 @@ module.exports = (robot) ->
   #    robot.brain.set 'userlist', usrs
 
   robot.respond /debug/, (res) ->
-    res.reply "war data", JSON.stringify(load(robot)), "users", robot.brain.get('userlist'), 
-      "segreteria", JSON.stringify(robot.brain.get('segreteria'))
+    res.reply "`war data: #{JSON.stringify(load(robot))}, users: #{robot.brain.get('userlist')}, segreteria: #{JSON.stringify(robot.brain.get('segreteria'))}`"
 
   robot.respond /(avvia|programma) (war|guerra) alle (\d+)/i, (res) ->
     warspec = load(robot)
@@ -196,7 +201,7 @@ module.exports = (robot) ->
       return
 
     for msg in segreteria[me]
-      res.reply "- Messaggio da #{msg.from.name} delle #{moment(msg.when).format('LT l')}: #{msg.msg}."
+      res.reply draw msg
 
   robot.respond /cancella messaggi/, (res) ->
     segreteria = robot.brain.get('segreteria')
