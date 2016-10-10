@@ -167,7 +167,7 @@ module.exports = function (robot) {
     });
 
     robot.respond(/debug/, function (res) {
-        res.reply("`war data: " + JSON.stringify(warspec) + ", segreteria: " + JSON.stringify(segreteria) + "`");
+        res.reply("`war data: " + JSON.stringify(warspec.load()) + ", segreteria: " + JSON.stringify(segreteria.getMessages(res.message.user.name)) + "`");
     });
 
     robot.respond(/(avvia|programma) (war|guerra) alle (\d+)/i, function (res) {
