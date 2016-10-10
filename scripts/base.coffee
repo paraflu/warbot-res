@@ -74,8 +74,8 @@ module.exports = (robot) ->
   #    robot.brain.set 'userlist', usrs
 
   robot.respond /debug/, (res) ->
-    res.reply "war data", JSON.stringify(load(robot))
-    res.reply "users", robot.brain.get('userlist')
+    res.reply "war data", JSON.stringify(load(robot)), "users", robot.brain.get('userlist'), 
+      "segreteria", JSON.stringify(robot.brain.get('segreteria'))
 
   robot.respond /(avvia|programma) (war|guerra) alle (\d+)/i, (res) ->
     warspec = load(robot)
