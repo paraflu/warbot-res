@@ -180,7 +180,7 @@ module.exports = function (robot) {
         var usr = res.message.user;
         if (self.segreteria.messageForMe(usr.name)) {
             res.reply("Ci sono messaggi per te!\n" +  self.segreteria.getMessages(usr));
-            self.segreteria.readAll(usr.name);
+            // self.segreteria.readAll(usr.name);
         } else {
             // res.reply("Nessun messaggio.");
         }
@@ -268,7 +268,7 @@ module.exports = function (robot) {
         var msg = "ciao " + res.message.user.name;
         if (self.segreteria.messageForMe(res.message.user.name)) {
             msg += self.segreteria.getMessages(res.message.user.name);
-            self.segreteria.readAll(res.message.user.name)
+            // self.segreteria.readAll(res.message.user.name)
         }
         res.reply(msg);
     });
@@ -309,7 +309,7 @@ module.exports = function (robot) {
 
     robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/, function (res) {
         res.reply(self.segreteria.getMessages(res.message.user.name));
-        self.segreteria.readAll(res.message.user.name);
+        // self.segreteria.readAll(res.message.user.name);
     });
 
     robot.respond(/cancella messaggi/, function (res) {
