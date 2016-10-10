@@ -105,6 +105,7 @@ function WarSpec(robot) {
             warspecs = bot.brain.get('warspec');
             if (!warspecs)
                 warspecs = [];
+            bot.logger.debug('warspec.save ' + JSON.stringify(warspecs[roomid]));
             return warspecs[roomid]
         } 
     }
@@ -114,6 +115,7 @@ function WarSpec(robot) {
             warspecs[id] = data;
         }
         bot.brain.set('warspec', warspecs);
+        bot.logger.debug('warspec.save ' + JSON.stringify(warspecs));
     }
 
     this.remove = function(id) {
