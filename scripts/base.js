@@ -87,7 +87,7 @@ function Segreteria(robot)
           
     }
     this.toString = function() {
-        return JSON.stringify(bot.brain.get(key));
+        return JSON.stringify(data);
     }
 
     data = this.load();
