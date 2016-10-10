@@ -65,7 +65,7 @@ module.exports = (robot) ->
   robot.hear /.*/, (res) ->
     usr = res.message.user
     msgs = messaggioper(usr)
-    if msg
+    if (msgs && msgs.length > 0)
       res.send "`#{_.join(msgs, "\n")}`"
       segreteria = robot.brain.get('segreteria')
       delete segreteria[usr.name]
