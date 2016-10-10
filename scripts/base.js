@@ -179,7 +179,7 @@ module.exports = function (robot) {
     });
 
     robot.respond(/(avvia|programma) (war|guerra) alle (\d+)/i, function (res) {
-        var wdata = self.warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room);
         if (wdata) {
             res.reply(wdata.user.username + " la sta avviando...");
         } else {
@@ -189,47 +189,47 @@ module.exports = function (robot) {
                 start_at: moment(res.match[3], 'h').toDate()
             };
             res.reply("Ok, progammata per le " + (moment(ws.start_at).format('LT l')) + "!");
-            self.warspec.save(res.message.room.id, ws);
+            self.warspec.save(res.message.room, ws);
         }
     });
 
     robot.respond(/start war|avvia (war|guerra)$|avviamo.*war$/i, function (res) {
-        var wdata = self.warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room);
         if (!wdata) {
             wdata = {
                 user: res.message.user,
                 when: new Date()
             };
             res.reply("Ok, quando la lanci?");
-            self.warspec.save(res.message.room.id, wdata);
+            self.warspec.save(res.message.room, wdata);
         } else {
             res.reply(wdata.user.username + " la sta avviando... messaggio delle " + (moment(wdata.start_at).format('LT l')));
         }
     });
 
     robot.respond(/alle (\d+)/i, function (res) {
-        var wdata = self.warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room);
         if (wdata) {
             wdata.start_at = moment(res.match[1], 'h').toDate();
             res.reply("ok " + res.message.user.username + " avviamo alle " + (moment(wdata.start_at).format('LT l')));
-            self.warspec.save(res.message.room.id, wdata);
+            self.warspec.save(res.message.room, wdata);
         } else {
             res.reply("Nessuna war programmata.");
         }
     });
 
     robot.respond(/cancella war/i, function (res) {
-        var wdata = self.warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room);
         if (!wdata) {
             res.reply("non ci sono guerre in programma...");
         } else {
             res.reply("Ok!");
-            self.warspec.remove(res.message.room.id);
+            self.warspec.remove(res.message.room);
         }
     });
 
     robot.respond(/(guerr[ea]|war) in (programma|previsione|corso)|(guerra|war) programmata/i, function (res) {
-        res.reply(self.warspec.status(res.message.room.id));
+        res.reply(self.warspec.status(res.message.room));
     });
 
     // robot.respond(/avvisa tutti che (.*)$/i, function (res) {
@@ -248,7 +248,7 @@ module.exports = function (robot) {
     // });
 
     robot.respond(/quanto manca/i, function (res) {
-        res.reply(self.warspec.status(res.message.room.id));
+        res.reply(self.warspec.status(res.message.room));
     });
 
     robot.hear(/ciao/i, function (res) {
@@ -262,21 +262,21 @@ module.exports = function (robot) {
     });
 
     robot.respond(/la strategia è (.*)/i, function (res) {
-        var wdata = self.warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room);
         if (wdata) {
             wdata.strategia = res.match[1];
-            self.warspec.save(res.message.room.id, wdata);
+            self.warspec.save(res.message.room, wdata);
         } else {
             res.reply("Non ho capito.")
         }
     });
 
     robot.respond(/strategia/i, function (res) {
-        res.reply(self.warspec.status(res.message.room.id));
+        res.reply(self.warspec.status(res.message.room));
     });
 
     robot.respond(/status/i, function (res) {
-        res.reply(self.warspec.status(res.message.room.id));
+        res.reply(self.warspec.status(res.message.room));
     });
 
     robot.respond(/uptime/i, function(res) {
