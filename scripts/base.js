@@ -34,7 +34,7 @@ function Segreteria(robot)
     }
 
     this.messageForMe = function(usr) {
-        if (!data || data[usr.name] || data[usr.name].read) {
+        if (!data || !data[usr.name] || !data[usr.name].read) {
             return false;
         }
         return data[usr.name];
@@ -276,7 +276,7 @@ module.exports = function (robot) {
     });
 
     robot.respond(/uptime/i, function(res) {
-        res.reply(uptime.format());
+        res.reply(uptime.toNow());
     });
 
     robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/, function (res) {
