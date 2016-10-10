@@ -104,7 +104,7 @@ function WarSpec(robot) {
         } else {
             warspecs = bot.brain.get('warspec');
             if (!warspecs)
-                warspec = [];
+                warspecs = [];
             return warspecs[roomid]
         } 
     }
