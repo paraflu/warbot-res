@@ -118,7 +118,7 @@ function WarSpec(robot) {
     }
 
     this.status = function(roomid) {
-        var data = load(roomid);
+        var data = warspec[roomid];
         var inizio = moment(data.start_at);
         var fine_preparativi = moment(data.start_at).add(24, 'h');
         var fine_war = moment(fine_preparativi).add(24, 'h');
@@ -268,7 +268,7 @@ module.exports = function (robot) {
     });
 
     robot.respond(/status/i, function (res) {
-        res.reply(warspec.status(res, load(robot)));
+        res.reply(warspec.status(res.message.room.id));
     });
 
     robot.respond(/uptime/i, function(res) {
