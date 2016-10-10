@@ -19,6 +19,12 @@ moment.locale('it')
 module.exports = (robot) ->
   lastwar = undefined
 
+  robot.error (err, res) ->
+    robot.logger.error err
+
+    if res?
+      res.reply "Error: #{err}"
+
   save = (robot, warspec) ->
     robot.brain.set('warspec', warspec)
 
