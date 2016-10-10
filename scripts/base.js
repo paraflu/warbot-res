@@ -9,7 +9,7 @@
 
 
 //    hubot avvisa tutti <messaggio> - invia un `messaggio` a tutti gli utenti.
-//    hubot ci sono messaggi - invia i messaggi in segreteria 
+//    hubot ci sono messaggi - invia i messaggi in self.segreteria 
 
 var hasProp = {}.hasOwnProperty;
 
@@ -18,12 +18,12 @@ var moment = require('moment'),
 
 moment.locale('it');
 
-function Segreteria(robot)
+function self.segreteria(robot)
 {
     var bot = robot;
     var self = this;
     var data = [];
-    var key = 'segreteria';
+    var key = 'self.segreteria';
 
     this.save = function() {
         bot.brain.set(key, data)
@@ -86,6 +86,10 @@ function Segreteria(robot)
         self.save();
           
     }
+    this.toString = function() {
+        return JSON.stringify(bot.brain.get(key));
+    }
+
     data = this.load();
 }
 
@@ -137,6 +141,10 @@ function WarSpec(robot) {
             msg+= "Tattica: " + warspec.strategia + "\n";
         }
         return msg;
+    }
+
+    this.toString = function() {
+        return JSON.stringify(warspecs);
     }    
     
     warspecs = this.load();    
@@ -144,8 +152,8 @@ function WarSpec(robot) {
 
 module.exports = function (robot) {
 
-    var segreteria = new Segreteria(robot);
-    var warspec = new WarSpec(robot);
+    this.segreteria = new Segreteria(robot);
+    this.warspec = new WarSpec(robot);
     var self = this;
     var uptime = moment();
 
@@ -158,20 +166,20 @@ module.exports = function (robot) {
 
     robot.hear(/.*/, function (res) {
         var usr = res.message.user;
-        if (segreteria.messageForMe(usr.name)) {
-            res.reply("Ci sono messaggi per te!\n" +  segreteria.getMessages(usr));
-            segreteria.readAll(usr.name);
+        if (self.segreteria.messageForMe(usr.name)) {
+            res.reply("Ci sono messaggi per te!\n" +  self.segreteria.getMessages(usr));
+            self.segreteria.readAll(usr.name);
         } else {
             // res.reply("Nessun messaggio.");
         }
     });
 
     robot.respond(/debug/, function (res) {
-        res.reply("`war data: " + JSON.stringify(warspec.load()) + ", segreteria: " + JSON.stringify(segreteria.getMessages(res.message.user.name)) + "`");
+        res.reply("`war data: " + self.warspec + ", segreteria: " + self.segreteria + "`");
     });
 
     robot.respond(/(avvia|programma) (war|guerra) alle (\d+)/i, function (res) {
-        var wdata = warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room.id);
         if (wdata) {
             res.reply(wdata.user.username + " la sta avviando...");
         } else {
@@ -181,47 +189,47 @@ module.exports = function (robot) {
                 start_at: moment(res.match[3], 'h').toDate()
             };
             res.reply("Ok, progammata per le " + (moment(ws.start_at).format('LT l')) + "!");
-            warspec.save(res.message.room.id, ws);
+            self.warspec.save(res.message.room.id, ws);
         }
     });
 
     robot.respond(/start war|avvia (war|guerra)$|avviamo.*war$/i, function (res) {
-        var warspec;
-        var wdata = warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room.id);
         if (!wdata) {
             wdata = {
                 user: res.message.user,
                 when: new Date()
             };
             res.reply("Ok, quando la lanci?");
-            warspec.save(res.message.room.id, wdata);
+            self.warspec.save(res.message.room.id, wdata);
         } else {
             res.reply(wdata.user.username + " la sta avviando... messaggio delle " + (moment(wdata.start_at).format('LT l')));
         }
     });
 
     robot.respond(/alle (\d+)/i, function (res) {
-        var wdata = warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room.id);
         if (wdata) {
             wdata.start_at = moment(res.match[1], 'h').toDate();
             res.reply("ok " + res.message.user.username + " avviamo alle " + (moment(wdata.start_at).format('LT l')));
-            warspec.save(res.message.room.id, wdata);
+            self.warspec.save(res.message.room.id, wdata);
         } else {
             res.reply("Nessuna war programmata.");
         }
     });
 
     robot.respond(/cancella war/i, function (res) {
-        var wdata = warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room.id);
         if (!wdata) {
             res.reply("non ci sono guerre in programma...");
         } else {
             res.reply("Ok!");
-            warspec.remove(res.message.room.id);
+            self.warspec.remove(res.message.room.id);
         }
     });
+
     robot.respond(/(guerr[ea]|war) in (programma|previsione|corso)|(guerra|war) programmata/i, function (res) {
-        res.reply(warspec.status(res.message.room.id));
+        res.reply(self.warspec.status(res.message.room.id));
     });
 
     // robot.respond(/avvisa tutti che (.*)$/i, function (res) {
@@ -240,35 +248,35 @@ module.exports = function (robot) {
     // });
 
     robot.respond(/quanto manca/i, function (res) {
-        res.reply(warspec.status(res.message.room.id));
+        res.reply(self.warspec.status(res.message.room.id));
     });
 
     robot.hear(/ciao/i, function (res) {
         robot.logger.debug(res);
         var msg = "ciao " + res.message.user.name;
-        if (segreteria.messageForMe(res.message.user.name)) {
-            msg += segreteria.getMessages(res.message.user.name);
-            segreteria.readAll(res.message.user.name)
+        if (self.segreteria.messageForMe(res.message.user.name)) {
+            msg += self.segreteria.getMessages(res.message.user.name);
+            self.segreteria.readAll(res.message.user.name)
         }
         res.reply(msg);
     });
 
     robot.respond(/la strategia è (.*)/i, function (res) {
-        var wdata = warspec.load(res.message.room.id);
+        var wdata = self.warspec.load(res.message.room.id);
         if (wdata) {
             wdata.strategia = res.match[1];
-            warspec.save(res.message.room.id, wdata);
+            self.warspec.save(res.message.room.id, wdata);
         } else {
             res.reply("Non ho capito.")
         }
     });
 
     robot.respond(/strategia/i, function (res) {
-        res.reply(warspec.status(res.message.room.id));
+        res.reply(self.warspec.status(res.message.room.id));
     });
 
     robot.respond(/status/i, function (res) {
-        res.reply(warspec.status(res.message.room.id));
+        res.reply(self.warspec.status(res.message.room.id));
     });
 
     robot.respond(/uptime/i, function(res) {
@@ -281,21 +289,21 @@ module.exports = function (robot) {
 
     robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/, function (res) {
         var username = res.match[2];
-        segreteria.inviaMessaggio(username, res.message.user, res.match[4]);
-        segreteria.save();
+        self.segreteria.inviaMessaggio(username, res.message.user, res.match[4]);
+        self.segreteria.save();
         res.reply("Messaggio per " + username + " archiviato.");
     });
 
     robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/, function (res) {
-        res.reply(segreteria.getMessages(res.message.user.name));
-        segreteria.readAll(res.message.user.name);
+        res.reply(self.segreteria.getMessages(res.message.user.name));
+        self.segreteria.readAll(res.message.user.name);
     });
 
     robot.respond(/cancella messaggi/, function (res) {
-        var db = segreteria.messageForMe(res.message.user.name);
+        var db = self.segreteria.messageForMe(res.message.user.name);
         if (db) {
             res.reply("Cancellati " + db.length + " messaggi.");
-            segreteria.empty(res.message.user.name);
+            self.segreteria.empty(res.message.user.name);
         } else {
             res.reply("Nessun messaggio presente.");
         }
