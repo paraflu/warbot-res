@@ -71,7 +71,7 @@ function Segreteria(robot)
 
     this.inviaMessaggio = function (destinatario, mittente, messaggio) {
         if (!data) {
-            data = [];
+            data = this.load();
         }
 
         if (!data[destinatario]) {
