@@ -100,7 +100,7 @@ function WarSpec(robot) {
 
     this.load = function(roomid) {
         if (!roomid) {
-            return bot.brain.get('warspec');
+            return bot.brain.get('warspec') || [];
         } else {
             warspecs = bot.brain.get('warspec');
             if (!warspecs)
@@ -130,6 +130,10 @@ function WarSpec(robot) {
     }
 
     this.status = function(roomid) {
+        if (!warspecs) {
+            this.load();
+        }
+
         var data = warspecs[roomid];
         if (!data) {
             return "Nessuna war in corso.";
