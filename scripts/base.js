@@ -242,8 +242,8 @@ module.exports = function (robot) {
     });
 
     robot.hear(/ciao/i, function (res) {
-        var msg = "ciao " + res.message.user.username;
-        if (segreteria.messageForMe(res.message.username.name)) {
+        var msg = "ciao " + res.message.user.name;
+        if (segreteria.messageForMe(res.message.user.name)) {
             msg += segreteria.getMessages();
         }
         res.reply(msg);
@@ -275,16 +275,16 @@ module.exports = function (robot) {
 
     robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/, function (res) {
         var usrname = res.match[2];
-        segreteria.inviaMessaggio(username, res.message.username, res.match[4]);
+        segreteria.inviaMessaggio(username, res.message.user, res.match[4]);
         segreteria.save();
         res.reply("Messaggio per " + usrname + " archiviato.");
     });
 
     robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/, function (res) {
-        res.reply(segreteria.getMessages(res.message.username.name));
+        res.reply(segreteria.getMessages(res.message.user.name));
     });
 
     robot.respond(/cancella messaggi/, function (res) {
-        segreteria.empty(res.message.username.name);
+        segreteria.empty(res.message.user.name);
     });
 };
