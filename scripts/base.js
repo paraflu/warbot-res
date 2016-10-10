@@ -23,14 +23,15 @@ function Segreteria(robot)
     var bot = robot;
     var self = this;
     var data = [];
-    var key = 'self.segreteria';
+    var key = 'segreteria';
 
     this.save = function() {
-        bot.brain.set(key, data)
+        bot.brain.set(key, data);
+        bot.logger.debug("segreteria.save " + JSON.stringify(data));
     }
 
     this.load = function() {
-        return bot.brain.get(key);
+        return bot.brain.get(key) || [];
     }
 
     this.messageForMe = function(usr) {
@@ -86,6 +87,7 @@ function Segreteria(robot)
         self.save();
           
     }
+
     this.toString = function() {
         return JSON.stringify(data);
     }
