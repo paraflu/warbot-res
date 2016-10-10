@@ -160,6 +160,7 @@ module.exports = function (robot) {
         var usr = res.message.user;
         if (segreteria.messageForMe(usr.name)) {
             res.reply("Ci sono messaggi per te!\n" +  segreteria.getMessages(usr));
+            segreteria.readAll(usr.name);
         } else {
             // res.reply("Nessun messaggio.");
         }
@@ -246,7 +247,8 @@ module.exports = function (robot) {
         robot.logger.debug(res);
         var msg = "ciao " + res.message.user.name;
         if (segreteria.messageForMe(res.message.user.name)) {
-            msg += segreteria.getMessages();
+            msg += segreteria.getMessages(res.message.user.name);
+            segreteria.readAll(res.message.user.name)
         }
         res.reply(msg);
     });
@@ -266,17 +268,15 @@ module.exports = function (robot) {
     });
 
     robot.respond(/status/i, function (res) {
-        return status(res, load(robot));
-    });
-
-    robot.respond(/reset/i, function (res) {
-        if (res.message.user.name === 'paraflu') {
-            return robot.rabin.remove('userlist');
-        }
+        res.reply(warspec.status(res, load(robot)));
     });
 
     robot.respond(/uptime/i, function(res) {
         res.reply(uptime.toNow());
+    });
+
+    robot.respond(/ci sei/, function(res) {
+        res.reply("si, si ... son qui dalle " + uptime.toNow());
     });
 
     robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/, function (res) {
@@ -288,9 +288,17 @@ module.exports = function (robot) {
 
     robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/, function (res) {
         res.reply(segreteria.getMessages(res.message.user.name));
+        segreteria.readAll(res.message.user.name);
     });
 
     robot.respond(/cancella messaggi/, function (res) {
-        segreteria.empty(res.message.user.name);
+        var db = segreteria.messageForMe(res.message.user.name);
+        if (db) {
+            res.reply("Cancellati " + db.length + " messaggi.");
+            segreteria.empty(res.message.user.name);
+        } else {
+            res.reply("Nessun messaggio presente.");
+        }
+        
     });
 };
