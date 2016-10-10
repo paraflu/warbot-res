@@ -123,26 +123,27 @@ module.exports = (robot) ->
 
   robot.hear /ciao/i, (res) ->
     # robot.logger.debug res.message.user
-    res.reply "ciao #{res.message.user.username}"
+    msg = "ciao #{res.message.user.username}"
     usr = res.message.user
     segreteria = robot.brain.get('segreteria')
     if (segreteria && segreteria[usr.name] && segreteria[usr.name].length > 0)
-      res.reply "ho #{segreteria[usr.name].length} messaggi per te!"
+      msg += ",ho #{segreteria[usr.name].length} messaggi per te!"
+    res.reply msg
 
-  robot.respond /la strategia è (.*)/, (res) ->
+  robot.respond /la strategia è (.*)/i, (res) ->
     warspec = load(robot)
     warspec.strategia = res.match[1]
     status res, warspec
 
-  robot.respond /strategia\?$/, (res) ->
+  robot.respond /strategia/i, (res) ->
     warspec = load(robot)
     status res, warspec
 
-  robot.respond /status/, (res) ->
+  robot.respond /status/i, (res) ->
     status res, load(robot)
  
 
-  robot.respond /reset/, (res) ->
+  robot.respond /reset/i  , (res) ->
     if res.message.user.name == 'paraflu'
       robot.rabin.remove('userlist')
  
