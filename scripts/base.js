@@ -273,9 +273,9 @@ module.exports = function (robot) {
         }
     });
 
-    robot.respond(/quando vedi @(\w*) (digli|di|dille) (.*)$/, function (res) {
-        var usrname = res.match[1];
-        segreteria.inviaMessaggio(username, res.message.username, res.match[3]);
+    robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/, function (res) {
+        var usrname = res.match[2];
+        segreteria.inviaMessaggio(username, res.message.username, res.match[4]);
         segreteria.save();
         res.reply("Messaggio per " + usrname + " archiviato.");
     });
