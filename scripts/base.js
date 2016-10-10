@@ -150,7 +150,7 @@ function WarSpec(robot) {
             msg += "La war è finita alle " + (fine_war.format('LT l')) + "\n";
         }
         if (data.strategia) {
-            msg+= "Tattica: " + warspec.strategia + "\n";
+            msg+= "Tattica: " + data.strategia + "\n";
         }
         return msg;
     }
