@@ -40,6 +40,12 @@ function Segreteria(robot)
         return data[usr.name];
     }
 
+    this.readAll = function(usr) {
+        if (this.messageForMe(usr)) {
+            data[usr].read = true;
+        }
+    }
+
     this.getMessages = function (user) {
         var msgs = messageForMe(user);
         if (!msgs)
@@ -154,7 +160,7 @@ module.exports = function (robot) {
         if (segreteria.messageForMe(usr)) {
             res.reply("Ci sono messaggi per te!\n" +  segreteria.getMessages(usr));
         } else {
-            res.reply("Nessun messaggio.");
+            // res.reply("Nessun messaggio.");
         }
     });
 
