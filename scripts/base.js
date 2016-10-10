@@ -34,7 +34,7 @@ function Segreteria(robot)
     }
 
     this.messageForMe = function(usr) {
-        if (!data || !data[usr.name] || !data[usr.name].read) {
+        if (!data || !data[usr.name] || data[usr.name].read) {
             return false;
         }
         return data[usr.name];
@@ -119,9 +119,7 @@ function WarSpec(robot) {
             bot.logger.debug('warspec.save ' + JSON.stringify(warspecs));    
         } else {
             throw new Error("warspec.save nessun dato");
-        }
-        
-        
+        }        
     }
 
     this.remove = function(id) {
