@@ -11,7 +11,6 @@
 //    hubot avvisa tutti <messaggio> - invia un `messaggio` a tutti gli utenti.
 //    hubot ci sono messaggi - invia i messaggi in segreteria 
 
-`use strict`;
 var hasProp = {}.hasOwnProperty;
 
 var moment = require('moment'),
