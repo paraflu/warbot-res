@@ -31,7 +31,7 @@ function Segreteria(robot) {
     }
 
     this.load = function () {
-        return this.bot.brain.get(key) || [];
+        return this.bot.brain.get(this.key) || [];
     }
 
     this.messageForMe = function (usr) {
