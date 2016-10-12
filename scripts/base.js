@@ -26,35 +26,35 @@ function Segreteria(robot) {
     this.bot = robot;
 
     this.save = function () {
-        this.bot.brain.set(this.key, this.data);
-        this.bot.logger.debug("segreteria.save " + JSON.stringify(this.data));
+        self.bot.brain.set(self.key, self.data);
+        self.bot.logger.debug("segreteria.save " + JSON.stringify(self.data));
     }
 
     this.load = function () {
-        return this.bot.brain.get(this.key) || [];
+        return self.bot.brain.get(self.key) || [];
     }
 
     this.messageForMe = function (usr) {
-        if (!this.data) {
-            this.data = this.load();
-        }
-        if (!this.data || !this.data[usr.name] || this.data[usr.name].read) {
+        // if (!this.data) {
+        //     this.data = this.load();
+        // }
+        if (!self.data || !self.data[usr.name] || self.data[usr.name].read) {
             return false;
         }
-        return this.data[usr.name];
+        return self.data[usr.name];
     }
 
     this.readAll = function (usr) {
-        if (!this.data) {
-            this.data = this.load();
-        }
-        if (this.messageForMe(usr)) {
-            this.data[usr].read = true;
+        // if (!this.data) {
+        //     this.data = this.load();
+        // }
+        if (self.messageForMe(usr)) {
+            self.data[usr].read = true;
         }
     }
 
     this.getMessages = function (user) {
-        var msgs = this.messageForMe(user);
+        var msgs = self.messageForMe(user);
         if (!msgs) {
             return "Nessun messaggio";
         }
@@ -68,38 +68,38 @@ function Segreteria(robot) {
     };
 
     this.empty = function (username) {
-        if (!this.data) {
-            this.data = this.load();
-        }
-        if (this.getMessages(username)) {
-            delete this.data[username];
-            this.save();
+        // if (!this.data) {
+        //     this.data = this.load();
+        // }
+        if (self.getMessages(username)) {
+            delete self.data[username];
+            self.save();
         }
     }
 
     this.inviaMessaggio = function (destinatario, mittente, messaggio) {
-        if (!this.data) {
-            this.data = this.load();
+        // if (!this.data) {
+        //     this.data = this.load();
+        // }
+
+        if (!self.data[destinatario]) {
+            self.data[destinatario] = { read: true, messages: [] }
         }
 
-        if (!this.data[destinatario]) {
-            this.data[destinatario] = { read: true, messages: [] }
-        }
-
-        msgs = this.data[destinatario];
+        msgs = self.data[destinatario];
         msgs.messages.push({ read: false, message: messaggio, when: new Date(), from: mittente });
         msgs.read = false;
 
-        this.data[destinatario] = msgs;
+        self.data[destinatario] = msgs;
 
         self.save();
 
     }
 
     this.toString = function () {
-        if (!this.data) {
-            this.data = this.load();
-        }
+        // if (!this.data) {
+        //     this.data = this.load();
+        // }
         return JSON.stringify(this.data);
     }
 
@@ -124,9 +124,9 @@ function WarSpec(robot) {
     }
 
     this.save = function (id, data) {
-        if (!self.warspecs) {
-            self.warspecs = this.load();
-        }
+        // if (!self.warspecs) {
+        //     self.warspecs = this.load();
+        // }
         if (id) {
             self.warspecs[id] = data;
         }
@@ -139,9 +139,9 @@ function WarSpec(robot) {
     }
 
     this.remove = function (id) {
-        if (!self.warspecs) {
-            self.warspecs = this.load();
-        }
+        // if (!self.warspecs) {
+        //     self.warspecs = this.load();
+        // }
         if (self.warspecs[id]) {
             delete self.warspecs[id];
             this.save();
@@ -209,7 +209,7 @@ module.exports = function (robot) {
         }
     });
 
-    robot.respond(/debug/, function (res) {
+    robot.respond(/debug/i, function (res) {
         res.reply("`war data: " + self.warspec + ", segreteria: " + self.segreteria + "`");
     });
 
@@ -319,23 +319,23 @@ module.exports = function (robot) {
         res.reply(uptime.toNow());
     });
 
-    robot.respond(/ci sei/, function (res) {
+    robot.respond(/ci sei/i, function (res) {
         res.reply("si, si ... son qui dalle " + uptime.toNow());
     });
 
-    robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/, function (res) {
+    robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/i, function (res) {
         var username = res.match[2];
         self.segreteria.inviaMessaggio(username, res.message.user, res.match[4]);
         self.segreteria.save();
         res.reply("Messaggio per " + username + " archiviato.");
     });
 
-    robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/, function (res) {
+    robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/i, function (res) {
         res.reply(self.segreteria.getMessages(res.message.user.name));
         // self.segreteria.readAll(res.message.user.name);
     });
 
-    robot.respond(/cancella messaggi/, function (res) {
+    robot.respond(/cancella messaggi/i, function (res) {
         var db = self.segreteria.messageForMe(res.message.user.name);
         if (db) {
             res.reply("Cancellati " + db.length + " messaggi.");
