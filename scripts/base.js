@@ -14,8 +14,9 @@
 var hasProp = {}.hasOwnProperty;
 
 var moment = require('moment'),
-    _ = require('lodash');
-
+    _ = require('lodash'),
+    util = require('util');
+    
 moment.locale('it');
 
 function Segreteria(robot) {
@@ -109,7 +110,7 @@ function Segreteria(robot) {
         // if (!this.data) {
         //     this.data = this.load();
         // }
-        return "Segreteria.class:" + JSON.stringify(this.data);
+        return "Segreteria.class:" + util.inspect(this);
     }
 
     robot.logger.debug(">segreteria LOAD");
@@ -190,7 +191,7 @@ function WarSpec(robot) {
     }
 
     this.toString = function () {
-        return "warspec.class:" + JSON.stringify(self.warspecs);
+        return "warspec.class:" + util.inspect(this);
     }
 
     robot.logger.debug("load>");
