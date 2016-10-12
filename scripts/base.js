@@ -217,7 +217,7 @@ module.exports = function (robot) {
         var usr = res.message.user;
         robot.logger.debug("usr", res.message);
         if (self.segreteria.messageForMe(usr.name)) {
-            res.reply("Ci sono messaggi per te!\n" + self.segreteria.getMessages(usr.name));
+            res.reply("Ci sono messaggi per te!\n`" + self.segreteria.getMessages(usr.name)+"`");
             // self.segreteria.readAll(usr.name);
         } else {
             res.reply("Nessun messaggio. " + self.segreteria.toString());
@@ -341,7 +341,7 @@ module.exports = function (robot) {
     robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/i, function (res) {
         var username = res.match[2];
         self.segreteria.inviaMessaggio(username, res.message.user, res.match[4]);
-        self.segreteria.save();
+        // self.segreteria.save();
         res.reply("Messaggio per " + username + " archiviato.");
     });
 
