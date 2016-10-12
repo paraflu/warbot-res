@@ -18,143 +18,142 @@ var moment = require('moment'),
 
 moment.locale('it');
 
-function Segreteria(robot)
-{
-    var bot = robot;
+function Segreteria(robot) {
+    
     var self = this;
-    var data = [];
-    var key = 'segreteria';
+    this.data = [];
+    this.key = 'segreteria';
+    this.bot = robot;
 
-    this.save = function() {
-        bot.brain.set(key, data);
-        bot.logger.debug("segreteria.save " + JSON.stringify(data));
+    this.save = function () {
+        this.bot.brain.set(this.key, this.data);
+        this.bot.logger.debug("segreteria.save " + JSON.stringify(this.data));
     }
 
-    this.load = function() {
-        return bot.brain.get(key) || [];
+    this.load = function () {
+        return this.bot.brain.get(key) || [];
     }
 
-    this.messageForMe = function(usr) {
-         if (!data) {
-            data = this.load();
+    this.messageForMe = function (usr) {
+        if (!this.data) {
+            this.data = this.load();
         }
-        if (!data || !data[usr.name] || data[usr.name].read) {
+        if (!this.data || !this.data[usr.name] || this.data[usr.name].read) {
             return false;
         }
-        return data[usr.name];
+        return this.data[usr.name];
     }
 
-    this.readAll = function(usr) {
-        if (!data) {
-            data = this.load();
+    this.readAll = function (usr) {
+        if (!this.data) {
+            this.data = this.load();
         }
         if (this.messageForMe(usr)) {
-            data[usr].read = true;
+            this.data[usr].read = true;
         }
     }
 
     this.getMessages = function (user) {
         var msgs = this.messageForMe(user);
-        if (!msgs)
-        {
+        if (!msgs) {
             return "Nessun messaggio";
         }
         var msg = "";
-        _.map(msgs, function(it) {
-            msg += (it.letto?"*":" ") + 
+        _.map(msgs, function (it) {
+            msg += (it.letto ? "*" : " ") +
                 " da: " + it.from.name + " il " + moment(it.when).format("LT l") + "\n" +
-                    it.message;
+                it.message;
         });
         return msg;
     };
 
-    this.empty = function(username) {
-        if (!data) {
-            data = this.load();
+    this.empty = function (username) {
+        if (!this.data) {
+            this.data = this.load();
         }
         if (this.getMessages(username)) {
-            delete data[username];
+            delete this.data[username];
             this.save();
         }
     }
 
     this.inviaMessaggio = function (destinatario, mittente, messaggio) {
-        if (!data) {
-            data = this.load();
+        if (!this.data) {
+            this.data = this.load();
         }
 
-        if (!data[destinatario]) {
-            data[destinatario] = { read: true, messages: []}
+        if (!this.data[destinatario]) {
+            this.data[destinatario] = { read: true, messages: [] }
         }
 
-        msgs = data[destinatario];
-        msgs.messages.push({read: false, message: messaggio, when: new Date(), from: mittente});
+        msgs = this.data[destinatario];
+        msgs.messages.push({ read: false, message: messaggio, when: new Date(), from: mittente });
         msgs.read = false;
 
-        data[destinatario] = msgs;
+        this.data[destinatario] = msgs;
 
         self.save();
-          
+
     }
 
-    this.toString = function() {
-        if (!data) {
-            data = this.load();
+    this.toString = function () {
+        if (!this.data) {
+            this.data = this.load();
         }
-        return JSON.stringify(data);
+        return JSON.stringify(this.data);
     }
 
-    data = this.load();
+    this.data = this.load();
 }
 
 function WarSpec(robot) {
+    var self = this;
+    this.bot = robot;
+    this.warspecs = [];
 
-    var bot = robot;
-    var warspecs = [];
-
-    this.load = function(roomid) {
+    this.load = function (roomid) {
         if (!roomid) {
-            return bot.brain.get('warspec') || [];
+            return self.bot.brain.get('warspec') || [];
         } else {
-            warspecs = bot.brain.get('warspec');
-            if (!warspecs)
-                warspecs = [];
-            bot.logger.debug('warspec.save ' + JSON.stringify(warspecs[roomid]));
-            return warspecs[roomid];
-        } 
+            self.warspecs = self.bot.brain.get('warspec');
+            if (!self.warspecs)
+                self.warspecs = [];
+            self.bot.logger.debug('warspec.save ' + JSON.stringify(self.warspecs[roomid]));
+            return self.warspecs[roomid];
+        }
     }
 
-    this.save = function(id, data) {
-        if (!warspecs) {
-            warspecs = this.load();
+    this.save = function (id, data) {
+        if (!self.warspecs) {
+            self.warspecs = this.load();
         }
         if (id) {
-            warspecs[id] = data;
+            self.warspecs[id] = data;
         }
         if (warspecs) {
-            bot.brain.set('warspec', warspecs);
-            bot.logger.debug('warspec.save ' + JSON.stringify(warspecs));    
+            self.bot.brain.set('warspec', warspecs);
+            self.bot.logger.debug('warspec.save ' + JSON.stringify(warspecs));
         } else {
             throw new Error("warspec.save nessun dato");
-        }        
+        }
     }
 
-    this.remove = function(id) {
-        if (!warspecs) {
-            warspecs = this.load();
+    this.remove = function (id) {
+        if (!self.warspecs) {
+            self.warspecs = this.load();
         }
-        if (warspecs[id]) {
-            delete warspecs[id];
+        if (self.warspecs[id]) {
+            delete self.warspecs[id];
             this.save();
         }
     }
 
-    this.status = function(roomid) {
-        if (!warspecs) {
+    this.status = function (roomid) {
+        if (!self.warspecs) {
             this.load();
         }
 
-        var data = warspecs[roomid];
+        var data = self.warspecs[roomid];
         if (!data) {
             return "Nessuna war in corso.";
         }
@@ -174,16 +173,16 @@ function WarSpec(robot) {
             msg += "La war è finita alle " + (fine_war.format('LT l')) + "\n";
         }
         if (data.strategia) {
-            msg+= "Tattica: " + data.strategia + "\n";
+            msg += "Tattica: " + data.strategia + "\n";
         }
         return msg;
     }
 
-    this.toString = function() {
-        return JSON.stringify(warspecs);
-    }    
-    
-    warspecs = this.load();    
+    this.toString = function () {
+        return JSON.stringify(self.warspecs);
+    }
+
+    self.warspecs = this.load();
 }
 
 module.exports = function (robot) {
@@ -203,7 +202,7 @@ module.exports = function (robot) {
     robot.hear(/.*/, function (res) {
         var usr = res.message.user;
         if (self.segreteria.messageForMe(usr.name)) {
-            res.reply("Ci sono messaggi per te!\n" +  self.segreteria.getMessages(usr));
+            res.reply("Ci sono messaggi per te!\n" + self.segreteria.getMessages(usr));
             // self.segreteria.readAll(usr.name);
         } else {
             // res.reply("Nessun messaggio.");
@@ -316,11 +315,11 @@ module.exports = function (robot) {
         res.reply(self.warspec.status(res.message.room));
     });
 
-    robot.respond(/uptime/i, function(res) {
+    robot.respond(/uptime/i, function (res) {
         res.reply(uptime.toNow());
     });
 
-    robot.respond(/ci sei/, function(res) {
+    robot.respond(/ci sei/, function (res) {
         res.reply("si, si ... son qui dalle " + uptime.toNow());
     });
 
@@ -344,6 +343,6 @@ module.exports = function (robot) {
         } else {
             res.reply("Nessun messaggio presente.");
         }
-        
+
     });
 };
