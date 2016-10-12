@@ -32,9 +32,9 @@ function Segreteria(robot) {
     }
 
     this.load = function () {
-        self.bot.logger.debug("segreteria " + self.bot.brain.get(self.key));
+        self.bot.logger.debug("segreteria.load " + self.bot.brain.get(self.key));
         var loaded = self.bot.brain.get(self.key);
-        return loaded;
+        return loaded || [];
     }
 
     this.messageForMe = function (usr) {
