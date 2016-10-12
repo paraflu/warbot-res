@@ -214,6 +214,7 @@ module.exports = function (robot) {
 
     robot.hear(/.*/, function (res) {
         var usr = res.message.user;
+        robot.logger.debug("usr", res.message);
         if (self.segreteria.messageForMe(usr.name)) {
             res.reply("Ci sono messaggi per te!\n" + self.segreteria.getMessages(usr));
             // self.segreteria.readAll(usr.name);
