@@ -110,7 +110,7 @@ function Segreteria(robot) {
         // if (!this.data) {
         //     this.data = this.load();
         // }
-        return "Segreteria.class:" + util.inspect(this);
+        return "Segreteria.class:" + this.data;
     }
 
     robot.logger.debug(">segreteria LOAD");
@@ -191,7 +191,7 @@ function WarSpec(robot) {
     }
 
     this.toString = function () {
-        return "warspec.class:" + util.inspect(this);
+        return "warspec.class:" + this.warspecs;
     }
 
     robot.logger.debug("load>");
