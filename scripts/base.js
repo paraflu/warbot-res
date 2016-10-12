@@ -64,11 +64,11 @@ function Segreteria(robot) {
             return "Nessun messaggio";
         }
         var msg = "";
-        _.map(msgs, function (it) {
+        for(var i = 0; i < msgs.length; i++) {
             msg += (it.letto ? "*" : " ") +
                 " da: " + it.from + " il " + moment(it.when).format("LT l") + "\n" +
                 it.message;
-        });
+        }
         return msg;
     };
 
@@ -98,10 +98,10 @@ function Segreteria(robot) {
 
         self.data[destinatario] = msgs;
 
-        self.bot.logger.debug("invia messaggio" , self.data);
+        // self.bot.logger.debug("invia messaggio" , self.data);
 
         self.save(self.data);
-        self.bot.logger.debug("invia messaggio dopo save" , self.data);
+        // self.bot.logger.debug("invia messaggio dopo save" , self.data);
 
 
     }
