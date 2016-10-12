@@ -65,6 +65,7 @@ function Segreteria(robot) {
         }
         var msg = "";
         for(var i = 0; i < msgs.length; i++) {
+            var it =msgs[i];
             msg += (it.letto ? "*" : " ") +
                 " da: " + it.from + " il " + moment(it.when).format("LT l") + "\n" +
                 it.message;
