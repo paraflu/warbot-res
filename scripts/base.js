@@ -41,6 +41,7 @@ function Segreteria(robot) {
         // if (!this.data) {
         //     this.data = this.load();
         // }
+        self.bot.logger.debug("self.data ${self.data} self.data[usr.name] ${self.data[usr.name]}");
         if (!self.data || !self.data[usr.name] || self.data[usr.name].read) {
             return false;
         }
