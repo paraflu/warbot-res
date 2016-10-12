@@ -42,7 +42,7 @@ function Segreteria(robot) {
         // if (!this.data) {
         //     this.data = this.load();
         // }
-        self.bot.logger.debug("self.data " + self.data  + " self.data[usr.name] " + self.data[usr]);
+        // self.bot.logger.debug("self.data " + self.data  + " self.data[usr.name] " + self.data[usr]);
         if (!self.data || !self.data[usr] || self.data[usr].read) {
             return false;
         }
@@ -66,7 +66,7 @@ function Segreteria(robot) {
         var msg = "";
         _.map(msgs, function (it) {
             msg += (it.letto ? "*" : " ") +
-                " da: " + it.from.name + " il " + moment(it.when).format("LT l") + "\n" +
+                " da: " + it.from + " il " + moment(it.when).format("LT l") + "\n" +
                 it.message;
         });
         return msg;
