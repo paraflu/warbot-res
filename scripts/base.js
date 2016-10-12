@@ -19,19 +19,22 @@ var moment = require('moment'),
 moment.locale('it');
 
 function Segreteria(robot) {
-    
+
     var self = this;
     this.data = [];
     this.key = 'segreteria';
     this.bot = robot;
 
-    this.save = function () {
-        self.bot.brain.set(self.key, self.data);
-        self.bot.logger.debug("segreteria.save " + JSON.stringify(self.data));
+    this.save = function (data) {
+        self.bot.logger.debug("prima segreteria.save ", data);
+        self.bot.brain.set(self.key, data);
+        self.bot.logger.debug("segreteria.save " + JSON.stringify(data));
     }
 
     this.load = function () {
-        return self.bot.brain.get(self.key) || [];
+        self.bot.logger.debug("segreteria " + self.bot.brain.get(self.key));
+        var loaded = self.bot.brain.get(self.key);
+        return loaded;
     }
 
     this.messageForMe = function (usr) {
@@ -72,6 +75,7 @@ function Segreteria(robot) {
         //     this.data = this.load();
         // }
         if (self.getMessages(username)) {
+            self.bot.logger.debug("empty");
             delete self.data[username];
             self.save();
         }
@@ -92,7 +96,11 @@ function Segreteria(robot) {
 
         self.data[destinatario] = msgs;
 
-        self.save();
+        self.bot.logger.debug("invia messaggio" , self.data);
+
+        self.save(self.data);
+        self.bot.logger.debug("invia messaggio dopo save" , self.data);
+
 
     }
 
@@ -100,9 +108,10 @@ function Segreteria(robot) {
         // if (!this.data) {
         //     this.data = this.load();
         // }
-        return JSON.stringify(this.data);
+        return "Segreteria.class:" + JSON.stringify(this.data);
     }
 
+    robot.logger.debug(">segreteria LOAD");
     this.data = this.load();
 }
 
@@ -116,6 +125,7 @@ function WarSpec(robot) {
             return self.bot.brain.get('warspec') || [];
         } else {
             self.warspecs = self.bot.brain.get('warspec');
+            this.bot.logger.debug("WarSpec.load " + self.warspec);
             if (!self.warspecs)
                 self.warspecs = [];
             self.bot.logger.debug('warspec.save ' + JSON.stringify(self.warspecs[roomid]));
@@ -149,9 +159,9 @@ function WarSpec(robot) {
     }
 
     this.status = function (roomid) {
-        if (!self.warspecs) {
-            this.load();
-        }
+        // if (!self.warspecs) {
+        //     this.load();
+        // }
 
         var data = self.warspecs[roomid];
         if (!data) {
@@ -179,10 +189,12 @@ function WarSpec(robot) {
     }
 
     this.toString = function () {
-        return JSON.stringify(self.warspecs);
+        return "warspec.class:" + JSON.stringify(self.warspecs);
     }
 
+    robot.logger.debug("load>");
     self.warspecs = this.load();
+    robot.logger.debug(self.warspecs);
 }
 
 module.exports = function (robot) {
@@ -205,12 +217,12 @@ module.exports = function (robot) {
             res.reply("Ci sono messaggi per te!\n" + self.segreteria.getMessages(usr));
             // self.segreteria.readAll(usr.name);
         } else {
-            // res.reply("Nessun messaggio.");
+            res.reply("Nessun messaggio. " + self.segreteria.toString());
         }
     });
 
     robot.respond(/debug/i, function (res) {
-        res.reply("`war data: " + self.warspec + ", segreteria: " + self.segreteria + "`");
+        res.reply("`warspec: " + warspec.toString() + ", segreteria: " + self.segreteria.toString() + "`");
     });
 
     robot.respond(/(avvia|programma) (war|guerra) alle (\d+)/i, function (res) {
