@@ -216,7 +216,7 @@ module.exports = function (robot) {
         var usr = res.message.user;
         robot.logger.debug("usr", res.message);
         if (self.segreteria.messageForMe(usr.name)) {
-            res.reply("Ci sono messaggi per te!\n" + self.segreteria.getMessages(usr));
+            res.reply("Ci sono messaggi per te!\n" + self.segreteria.getMessages(usr.name));
             // self.segreteria.readAll(usr.name);
         } else {
             res.reply("Nessun messaggio. " + self.segreteria.toString());
