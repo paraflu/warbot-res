@@ -25,10 +25,10 @@ function Segreteria(robot) {
     this.key = 'segreteria';
     this.bot = robot;
 
-    this.save = function (data) {
-        self.bot.logger.debug("prima segreteria.save ", data);
-        self.bot.brain.set(self.key, data);
-        self.bot.logger.debug("segreteria.save " + JSON.stringify(data));
+    this.save = function () {
+        self.bot.logger.debug("prima segreteria.save ", self.data);
+        self.bot.brain.set(self.key, self.data);
+        self.bot.logger.debug("segreteria.save " , self.data);
     }
 
     this.load = function () {
