@@ -41,11 +41,11 @@ function Segreteria(robot) {
         // if (!this.data) {
         //     this.data = this.load();
         // }
-        self.bot.logger.debug("self.data " + self.data  + " self.data[usr.name] " + self.data[usr.name]);
-        if (!self.data || !self.data[usr.name] || self.data[usr.name].read) {
+        self.bot.logger.debug("self.data " + self.data  + " self.data[usr.name] " + self.data[usr]);
+        if (!self.data || !self.data[usr] || self.data[usr].read) {
             return false;
         }
-        return self.data[usr.name];
+        return self.data[usr];
     }
 
     this.readAll = function (usr) {
