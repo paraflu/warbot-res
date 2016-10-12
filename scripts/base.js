@@ -67,7 +67,7 @@ function Segreteria(robot) {
         for(var i = 0; i < msgs.length; i++) {
             var it =msgs[i];
             msg += (it.letto ? "*" : " ") +
-                " da: " + it.from + " il " + moment(it.when).format("LT l") + "\n" +
+                " da: " + it.from.name + " il " + moment(it.when).format("LT l") + "\n" +
                 it.message;
         }
         return msg;
@@ -218,10 +218,11 @@ module.exports = function (robot) {
         var usr = res.message.user;
         robot.logger.debug("usr", res.message);
         if (self.segreteria.messageForMe(usr.name)) {
-            res.reply("`Ci sono messaggi per te!\n" + self.segreteria.getMessages(usr.name)+"`");
-            // self.segreteria.readAll(usr.name);
+            res.reply("Ci sono messaggi per te!")
+            res.reply(self.segreteria.getMessages(usr.name));
+            segreteria.readAll();
         } else {
-            res.reply("Nessun messaggio. " + self.segreteria.toString());
+            // res.reply("Nessun messaggio. " + self.segreteria.toString());
         }
     });
 
