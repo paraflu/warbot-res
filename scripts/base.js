@@ -129,25 +129,14 @@ function WarSpec(robot) {
     this.warspecs = [];
 
     this.load = function (roomid) {
-        if (!roomid) {
-            var wdata = self.bot.brain.get('warspec');
-            if (!wdata || wdata == "") {
-                return [];
-            }
-            // this.bot.logger.debug("warspec.load", wdata);
-            return JSON.parse(wdata);
+        var wdata = self.bot.brain.get('warspec');
+        if (!wdata || wdata == "") {
+            self.warspecs = [];
         } else {
-            var wdata = self.bot.brain.get('warspec');
-            if (!wdata) {
-                self.warspecs = [];
-            } else {
-                self.warspecs = JSON.stringify(wdata);
-            }
-            // this.bot.logger.debug("WarSpec.load " + self.warspec);
-            // if (!self.warspecs)
-            //     self.warspecs = [];
-            // self.bot.logger.debug('warspec.save ' + JSON.stringify(self.warspecs[roomid]));
-            return self.warspecs[roomid] || false;
+            self.warspecs = JSON.pars(wdata);
+        }
+        if (roomid) {
+            return self.warspcs[roomid];
         }
     }
 
@@ -160,7 +149,7 @@ function WarSpec(robot) {
         }
         self.bot.logger.debug('warspec.save ',self.warspecs);
         self.bot.brain.set('warspec', JSON.stringify(self.warspecs));
-        self.bot.brain.save();
+        self.bot.brain.save();-
     }
 
     this.remove = function (id) {
