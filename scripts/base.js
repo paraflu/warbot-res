@@ -138,7 +138,7 @@ function WarSpec(robot) {
         }
 
         if (roomid) {
-            return self.warspcs[roomid];
+            return self.warspecs[roomid];
         }
     }
 
