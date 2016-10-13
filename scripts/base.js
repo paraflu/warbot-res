@@ -143,8 +143,6 @@ function WarSpec(robot) {
     }
 
     this.save = function (id, data) {
-        // if (!self.warspecs) {
-        //     self.warspecs = this.load();
         self.bot.logger.debug("save" + id + "=" + data);
         if (id !== undefined) {
             self.warspecs[id] = data;
