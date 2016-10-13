@@ -235,7 +235,10 @@ module.exports = function (robot) {
     });
 
 
-    robot.respond(/debug/i, function (res) {
+    robot.respond(/debug (.*)/i, function (res) {
+        if (res.match[1] == "messaggi") {
+            res.reply(segreteria.data);
+        }
         res.reply("`warspec: " + warspec.toString() + ", segreteria: " + self.segreteria.data + "`");
     });
 
