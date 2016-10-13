@@ -220,7 +220,7 @@ module.exports = function (robot) {
         if (self.segreteria.messageForMe(usr.name)) {
             res.reply("Ci sono messaggi per te!")
             res.reply(self.segreteria.getMessages(usr.name));
-            segreteria.readAll();
+            segreteria.readAll(usr.name);
         } else {
             // res.reply("Nessun messaggio. " + self.segreteria.toString());
         }
