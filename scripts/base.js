@@ -130,15 +130,17 @@ function WarSpec(robot) {
 
     this.load = function (roomid) {
         var wdata = self.bot.brain.get('warspec');
-
+        var wspecs = [];
         if (!wdata || wdata == "") {
-            self.warspecs = [];
+            wspecs = [];
         } else {
-            self.warspecs = JSON.parse(wdata);
+            wspecs = JSON.parse(wdata);
         }
 
         if (roomid) {
-            return self.warspecs[roomid];
+            return wspecs[roomid];
+        } else {
+            return wspecs;
         }
     }
 
@@ -162,10 +164,8 @@ function WarSpec(robot) {
         }
     }
 
-    this.status = function (roomid) {
-        // if (!self.warspecs) {
-        //     this.load();
-        // }
+    this.status = function (roomid)
+    {
 
         var data = self.warspecs[roomid];
         if (!data) {
