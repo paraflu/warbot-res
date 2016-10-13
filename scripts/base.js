@@ -235,12 +235,12 @@ module.exports = function (robot) {
     });
 
 
-    robot.respond(/debug (.*)/i, function (res) {
+    robot.respond(/debug\s*(.*)/i, function (res) {
         if (res.match[1] == "messaggi") {
             res.reply(self.segreteria.data);
             return;
         }
-        res.reply("`warspec: " + warspec.toString() + ", segreteria: " + self.segreteria.data + "`");
+        res.reply("`warspec: " + self.warspec.toString() + ", segreteria: " + self.segreteria.data + "`");
     });
 
     robot.respond(/(avvia|programma) (war|guerra) alle (\d+)/i, function (res) {
