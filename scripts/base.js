@@ -146,9 +146,9 @@ function WarSpec(robot) {
 
     this.save = function (id, data) {
         self.bot.logger.debug("save" + id + "=" + data);
-        if (id !== undefined) {
+        // if (id !== undefined) {
             self.warspecs[id] = data;
-        }
+        // }
         self.bot.logger.debug('warspec.save ',JSON.stringify(self.warspecs));
         self.bot.brain.set('warspec', JSON.stringify(self.warspecs));
         self.bot.brain.save();
