@@ -27,15 +27,18 @@ function Segreteria(robot) {
     this.bot = robot;
 
     this.save = function () {
-        self.bot.brain.set(self.key, self.data);
-        self.bot.logger.debug('segreteria.save', self.data);
+        self.bot.brain.set(self.key, JSON.stringify(self.data));
+        self.bot.logger.debug('segreteria.save', JSON.stringify(self.data));
         self.bot.brain.save();
     }
 
     this.load = function () {
-        self.bot.logger.debug("segreteria.load: " , self.bot.brain.get(self.key));
+        self.bot.logger.debug("segreteria.load: " , JSON.stringify(self.bot.brain.get(self.key)));
         var loaded = self.bot.brain.get(self.key);
-        return loaded || [];
+        if (!loaded || loaded == "") {
+            return {};
+        }
+        return loaded;
     }
 
     this.messageForMe = function (usr, all) {
@@ -70,7 +73,7 @@ function Segreteria(robot) {
         for(var i = 0; i < msgs.length; i++) {
             var it =msgs[i];
             msg += (it.letto ? "*" : " ") +
-                " da: " + it.from.name + " il " + moment(it.when).format("LT l") + "\n" +
+                " da: " + it.from + " il " + moment(it.when).format("LT l") + "\n" +
                 it.message;
         }
         return msg;
@@ -203,6 +206,20 @@ function WarSpec(robot) {
     robot.logger.debug(self.warspecs);
 }
 
+
+function DbCommand(robot) 
+{
+    var bot = robot;
+    this.set = function(key, value) {
+        bot.brain.set(key, value);
+    }
+    this.get = function(key) {
+        return bot.brain.get(key);
+    }
+    this.save = function() {
+        bot.brain.save();
+    }
+}
 module.exports = function (robot) {
 
     // this.segreteria = new Segreteria(robot);
@@ -371,7 +388,7 @@ module.exports = function (robot) {
     robot.respond(/(quando|appena) vedi @(\w*) (digli|di|dille) (.*)$/i, function (res) {
         var username = res.match[2];
         var segreteria = new Segreteria(robot);
-        segreteria.inviaMessaggio(username, res.message.user, res.match[4]);
+        segreteria.inviaMessaggio(username, res.message.user.name, res.match[4]);
         // self.segreteria.save();
         res.reply("Messaggio per " + username + " archiviato.");
     });
@@ -388,4 +405,25 @@ module.exports = function (robot) {
         }
 
     });
+
+    robot.respond(/set (\w+) (.*)$/i, function(res) {
+        var db = new DbCommand(robot);
+        var key = res.match[1];
+        var value = res.match[2];
+        db.set(key,value);
+        res.reply("Ok.");
+    });
+
+    robot.respond(/get (\w+)/i, function(res) {
+        var key = res.match[1];
+        var db = new DbCommand(robot);
+        var value = db.get(key);
+        res.reply(key, "=", value);
+    });
+
+    robot.respond(/save/,function(res) {
+        var db = new DbCommand(robot);
+        db.save();
+        res.reply("Ok");
+    })
 };
