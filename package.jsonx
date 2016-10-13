@@ -1,0 +1,34 @@
+{
+  "name": "warres_bot",
+  "version": "0.0.0",
+  "private": true,
+  "author": "andrea.forlin@gmail.com",
+  "description": "Bot per gestire le war in CoC",
+  "dependencies": {
+    "hubot": "^2.19.0",
+    "hubot-diagnostics": "0.0.1",
+    "hubot-google-images": "^0.2.6",
+    "hubot-google-translate": "^0.2.0",
+    "hubot-help": "^0.2.0",
+    "hubot-heroku-keepalive": "^1.0.2",
+    "hubot-maps": "0.0.2",
+    "hubot-postgres-brain": "^0.1.0",
+    "hubot-pugme": "^0.1.0",
+    "hubot-redis-brain": "0.0.3",
+    "hubot-reload-scripts": "^0.1.4",
+    "hubot-rules": "^0.1.1",
+    "hubot-scripts": "^2.17.2",
+    "hubot-shipit": "^0.2.0",
+    "hubot-telegram": "^0.1.2",
+    "lodash": "^4.16.4",
+    "moment": "^2.15.1"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "co": "^4.6.0",
+    "hubot-test-helper": "^1.5.0"
+  }
+}

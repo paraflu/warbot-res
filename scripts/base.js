@@ -149,7 +149,7 @@ function WarSpec(robot) {
         if (id !== undefined) {
             self.warspecs[id] = data;
         }
-        self.bot.logger.debug('warspec.save ',self.warspecs);
+        self.bot.logger.debug('warspec.save ',JSON.stringify(self.warspecs));
         self.bot.brain.set('warspec', JSON.stringify(self.warspecs));
         self.bot.brain.save();
     }
@@ -164,9 +164,7 @@ function WarSpec(robot) {
         }
     }
 
-    this.status = function (roomid)
-    {
-
+    this.status = function (roomid) {
         var data = self.warspecs[roomid];
         if (!data) {
             return "Nessuna war in corso.";
@@ -214,6 +212,7 @@ function DbCommand(robot) {
         bot.brain.save();
     }
 }
+
 module.exports = function (robot) {
 
     // this.segreteria = new Segreteria(robot);
