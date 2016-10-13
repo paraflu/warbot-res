@@ -134,7 +134,7 @@ function WarSpec(robot) {
         if (!wdata || wdata == "") {
             self.warspecs = [];
         } else {
-            self.warspecs = JSON.pars(wdata);
+            self.warspecs = JSON.parse(wdata);
         }
 
         if (roomid) {
