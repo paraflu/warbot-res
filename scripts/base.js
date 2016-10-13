@@ -130,11 +130,13 @@ function WarSpec(robot) {
 
     this.load = function (roomid) {
         var wdata = self.bot.brain.get('warspec');
+
         if (!wdata || wdata == "") {
             self.warspecs = [];
         } else {
             self.warspecs = JSON.pars(wdata);
         }
+
         if (roomid) {
             return self.warspcs[roomid];
         }
