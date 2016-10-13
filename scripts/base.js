@@ -237,7 +237,7 @@ module.exports = function (robot) {
 
     robot.respond(/debug (.*)/i, function (res) {
         if (res.match[1] == "messaggi") {
-            res.reply(segreteria.data);
+            res.reply(self.segreteria.data);
             return;
         }
         res.reply("`warspec: " + warspec.toString() + ", segreteria: " + self.segreteria.data + "`");
@@ -346,7 +346,7 @@ module.exports = function (robot) {
     });
 
     robot.respond(/uptime/i, function (res) {
-        res.reply(uptime.toNow());
+        res.reply(uptime.fromNow());
     });
 
     robot.respond(/ci sei/i, function (res) {
