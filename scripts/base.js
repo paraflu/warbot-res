@@ -158,9 +158,9 @@ function WarSpec(robot) {
         if (id) {
             self.warspecs[id] = data;
         }
+        self.bot.logger.debug('warspec.save ' + JSON.stringify(self.warspecs));
         self.bot.brain.set('warspec', JSON.stringify(self.warspecs));
         self.bot.brain.save();
-        // self.bot.logger.debug('warspec.save ' + JSON.stringify(self.warspecs));
     }
 
     this.remove = function (id) {
