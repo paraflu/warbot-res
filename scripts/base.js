@@ -217,7 +217,7 @@ module.exports = function (robot) {
         }
     });
 
-    robot.hear(/.*/, function (res) {
+    robot.respond(/.*/, function (res) {
         var usr = res.message.user;
         robot.logger.debug("usr", res.message);
         if (self.segreteria.messageForMe(usr.name)) {
@@ -228,6 +228,12 @@ module.exports = function (robot) {
             // res.reply("Nessun messaggio. " + self.segreteria.toString());
         }
     });
+
+    robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/i, function (res) {
+        res.reply(self.segreteria.getMessages(res.message.user.name, false));
+        // self.segreteria.readAll(res.message.user.name);
+    });
+
 
     robot.respond(/debug/i, function (res) {
         res.reply("`warspec: " + warspec.toString() + ", segreteria: " + self.segreteria.data + "`");
@@ -350,11 +356,7 @@ module.exports = function (robot) {
         res.reply("Messaggio per " + username + " archiviato.");
     });
 
-    robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/i, function (res) {
-        res.reply(self.segreteria.getMessages(res.message.user.name, false));
-        // self.segreteria.readAll(res.message.user.name);
-    });
-
+ 
     robot.respond(/cancella messaggi/i, function (res) {
         var db = self.segreteria.messageForMe(res.message.user.name);
         if (db) {
