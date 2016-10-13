@@ -148,6 +148,7 @@ function WarSpec(robot) {
         }
         if (warspecs) {
             self.bot.brain.set('warspec', warspecs);
+            self.bot.brain.save();
             self.bot.logger.debug('warspec.save ' + JSON.stringify(warspecs));
         } else {
             throw new Error("warspec.save nessun dato");
@@ -244,6 +245,8 @@ module.exports = function (robot) {
             res.reply(segreteria.data);
             return;
         }
+        robot.logger.debug(warspec.warspecs);
+        robot.logger.debug(segreteria.data);
         res.reply("`warspec: " + warspec.toString() + ", segreteria: " + segreteria.data + "`");
     });
 
