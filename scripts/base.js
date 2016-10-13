@@ -26,8 +26,9 @@ function Segreteria(robot) {
     this.key = 'segreteria';
     this.bot = robot;
 
-    this.save = function () {
-        self.bot.brain.set(self.key, self.data);
+    this.save = function (data) {
+        self.bot.brain.set(self.key, data);
+        self.bot.logger.debug('segreteria.save', data);
         self.bot.brain.save();
     }
 
