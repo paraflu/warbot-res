@@ -2,6 +2,5 @@
   "hubot-help",
   "hubot-heroku-keepalive",
    "hubot-reload-scripts",
-   "hubot-postgres-brain",
-   "hubot-redis-brain"
+   "hubot-postgres-brain"
 ]
