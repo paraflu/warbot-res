@@ -230,7 +230,7 @@ module.exports = function (robot) {
     });
 
     robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/i, function (res) {
-        res.reply(self.segreteria.getMessages(res.message.user.name, false));
+        res.reply(self.segreteria.getMessages(res.message.user.name, true));
         // self.segreteria.readAll(res.message.user.name);
     });
 
@@ -238,6 +238,7 @@ module.exports = function (robot) {
     robot.respond(/debug (.*)/i, function (res) {
         if (res.match[1] == "messaggi") {
             res.reply(segreteria.data);
+            return;
         }
         res.reply("`warspec: " + warspec.toString() + ", segreteria: " + self.segreteria.data + "`");
     });
