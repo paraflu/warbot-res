@@ -144,10 +144,10 @@ function WarSpec(robot) {
                 self.warspec = JSON.stringify(wdata);
             }
             // this.bot.logger.debug("WarSpec.load " + self.warspec);
-            if (!self.warspecs)
-                self.warspecs = [];
+            // if (!self.warspecs)
+            //     self.warspecs = [];
             // self.bot.logger.debug('warspec.save ' + JSON.stringify(self.warspecs[roomid]));
-            return self.warspecs[roomid];
+            return self.warspecs[roomid] || {};
         }
     }
 
@@ -275,7 +275,7 @@ module.exports = function (robot) {
         var warspec = new WarSpec(robot);
         var wdata = warspec.load(res.message.room);
         if (wdata) {
-            res.reply(wdata.user.username + " la sta avviando...");
+            res.reply(wdata.user + " la sta avviando...");
         } else {
             var ws = {
                 user: res.message.user.name,
