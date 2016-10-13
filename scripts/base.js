@@ -230,7 +230,7 @@ module.exports = function (robot) {
     });
 
     robot.respond(/debug/i, function (res) {
-        res.reply("`warspec: " + warspec.toString() + ", segreteria: " + self.segreteria.toString() + "`");
+        res.reply("`warspec: " + warspec.toString() + ", segreteria: " + self.segreteria.data + "`");
     });
 
     robot.respond(/(avvia|programma) (war|guerra) alle (\d+)/i, function (res) {
