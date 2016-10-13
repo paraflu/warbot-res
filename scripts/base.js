@@ -38,13 +38,16 @@ function Segreteria(robot) {
         return loaded || [];
     }
 
-    this.messageForMe = function (usr) {
+    this.messageForMe = function (usr, all) {
         // if (!this.data) {
         //     this.data = this.load();
         // }
         // self.bot.logger.debug("self.data " + self.data  + " self.data[usr.name] " + self.data[usr]);
-        if (!self.data || !self.data[usr] || self.data[usr].read) {
+        if (!self.data || !self.data[usr]) {
             return false;
+        }
+        if (!all && self.data[usr].read) {
+          return false;
         }
         return self.data[usr];
     }
@@ -58,8 +61,8 @@ function Segreteria(robot) {
         }
     }
 
-    this.getMessages = function (user) {
-        var msgs = self.messageForMe(user).messages;
+    this.getMessages = function (user, all) {
+        var msgs = self.messageForMe(user, all).messages;
         if (!msgs) {
             return "Nessun messaggio";
         }
@@ -218,8 +221,8 @@ module.exports = function (robot) {
         var usr = res.message.user;
         robot.logger.debug("usr", res.message);
         if (self.segreteria.messageForMe(usr.name)) {
-            res.reply("Ci sono messaggi per te!")
-            res.reply(self.segreteria.getMessages(usr.name));
+            res.reply("Ci sono messaggi per te!\n" +
+                    self.segreteria.getMessages(usr.name));
             segreteria.readAll(usr.name);
         } else {
             // res.reply("Nessun messaggio. " + self.segreteria.toString());
@@ -348,7 +351,7 @@ module.exports = function (robot) {
     });
 
     robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/i, function (res) {
-        res.reply(self.segreteria.getMessages(res.message.user.name));
+        res.reply(self.segreteria.getMessages(res.message.user.name, false));
         // self.segreteria.readAll(res.message.user.name);
     });
 
