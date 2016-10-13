@@ -26,9 +26,9 @@ function Segreteria(robot) {
     this.key = 'segreteria';
     this.bot = robot;
 
-    this.save = function (data) {
-        self.bot.brain.set(self.key, data);
-        self.bot.logger.debug('segreteria.save', data);
+    this.save = function () {
+        self.bot.brain.set(self.key, self.data);
+        self.bot.logger.debug('segreteria.save', self.data);
         self.bot.brain.save();
     }
 
@@ -104,8 +104,8 @@ function Segreteria(robot) {
 
         // self.bot.logger.debug("invia messaggio" , self.data);
 
-        self.save(self.data);
-        // self.bot.logger.debug("invia messaggio dopo save" , self.data);
+        self.save();
+        self.bot.logger.debug("invia messaggio dopo save" , self.data);
 
 
     }
