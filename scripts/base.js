@@ -33,7 +33,7 @@ function Segreteria(robot) {
     }
 
     this.load = function () {
-        self.bot.logger.debug("segreteria.load " + self.bot.brain.get(self.key));
+        self.bot.logger.debug("segreteria.load: " , self.bot.brain.get(self.key));
         var loaded = self.bot.brain.get(self.key);
         return loaded || [];
     }
@@ -117,7 +117,6 @@ function Segreteria(robot) {
         return "Segreteria.class:" + this.data;
     }
 
-    robot.logger.debug(">segreteria LOAD");
     this.data = this.load();
 }
 
