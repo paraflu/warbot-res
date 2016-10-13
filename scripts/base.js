@@ -158,7 +158,7 @@ function WarSpec(robot) {
         if (id) {
             self.warspecs[id] = data;
         }
-        self.bot.logger.debug('warspec.save ' + JSON.stringify(self.warspecs));
+        self.bot.logger.debug('warspec.save ',self.warspecs);
         self.bot.brain.set('warspec', JSON.stringify(self.warspecs));
         self.bot.brain.save();
     }
@@ -189,7 +189,7 @@ function WarSpec(robot) {
         var ora = moment();
         var msg = "";
         if (ora < inizio) {
-            msg += "C'è la war programmata da " + data.user.username + " per le " + (moment(data.start_at).format('LT l')) + "\n";
+            msg += "C'è la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) + "\n";
         } else if (ora < fine_preparativi) {
             msg += "E' in corso una war, è il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + "\n";
         } else if (ora < fine_war) {
@@ -278,7 +278,7 @@ module.exports = function (robot) {
             res.reply(wdata.user.username + " la sta avviando...");
         } else {
             var ws = {
-                user: res.message.user,
+                user: res.message.user.name,
                 when: new Date(),
                 start_at: moment(res.match[3], 'h').toDate()
             };
@@ -292,13 +292,13 @@ module.exports = function (robot) {
         var wdata = warspec.load(res.message.room);
         if (!wdata) {
             wdata = {
-                user: res.message.user,
+                user: res.message.user.name,
                 when: new Date()
             };
             res.reply("Ok, quando la lanci?");
             warspec.save(res.message.room, wdata);
         } else {
-            res.reply(wdata.user.username + " la sta avviando... messaggio delle " + (moment(wdata.start_at).format('LT l')));
+            res.reply(wdata.user + " la sta avviando... messaggio delle " + (moment(wdata.start_at).format('LT l')));
         }
     });
 
@@ -307,7 +307,7 @@ module.exports = function (robot) {
         var wdata = warspec.load(res.message.room);
         if (wdata) {
             wdata.start_at = moment(res.match[1], 'h').toDate();
-            res.reply("ok " + res.message.user.username + " avviamo alle " + (moment(wdata.start_at).format('LT l')));
+            res.reply("ok " + res.message.user + " avviamo alle " + (moment(wdata.start_at).format('LT l')));
             warspec.save(res.message.room, wdata);
         } else {
             res.reply("Nessuna war programmata.");
