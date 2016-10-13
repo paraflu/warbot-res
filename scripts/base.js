@@ -218,7 +218,7 @@ module.exports = function (robot) {
     });
 
     robot.respond(/.*/, function (res) {
-        var segreteria = new segreteria(robot);
+        var segreteria = new Segreteria(robot);
         var usr = res.message.user;
         robot.logger.debug("usr", res.message);
         if (segreteria.messageForMe(usr.name)) {
@@ -231,14 +231,14 @@ module.exports = function (robot) {
     });
 
     robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/i, function (res) {
-        var segreteria = new segreteria(robot);
+        var segreteria = new Segreteria(robot);
         res.reply(segreteria.getMessages(res.message.user.name, true));
         // self.segreteria.readAll(res.message.user.name);
     });
 
 
     robot.respond(/debug\s*(.*)/i, function (res) {
-        var segreteria = new segreteria(robot);
+        var segreteria = new Segreteria(robot);
         var warspec = new WarSpec(robot);
         if (res.match[1] == "messaggi") {
             res.reply(segreteria.data);
