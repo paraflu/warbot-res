@@ -147,7 +147,7 @@ function WarSpec(robot) {
             // if (!self.warspecs)
             //     self.warspecs = [];
             // self.bot.logger.debug('warspec.save ' + JSON.stringify(self.warspecs[roomid]));
-            return self.warspecs[roomid] || {};
+            return self.warspecs[roomid] || false;
         }
     }
 
