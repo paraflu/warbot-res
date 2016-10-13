@@ -139,9 +139,9 @@ function WarSpec(robot) {
         } else {
             var wdata = self.bot.brain.get('warspec');
             if (!wdata) {
-                self.warspec = [];
+                self.warspecs = [];
             } else {
-                self.warspec = JSON.stringify(wdata);
+                self.warspecs = JSON.stringify(wdata);
             }
             // this.bot.logger.debug("WarSpec.load " + self.warspec);
             // if (!self.warspecs)
