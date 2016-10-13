@@ -16,7 +16,7 @@ var hasProp = {}.hasOwnProperty;
 var moment = require('moment'),
     _ = require('lodash'),
     util = require('util');
-    
+
 moment.locale('it');
 
 function Segreteria(robot) {
@@ -33,12 +33,12 @@ function Segreteria(robot) {
     }
 
     this.load = function () {
-        self.bot.logger.debug("segreteria.load: " , JSON.stringify(self.bot.brain.get(self.key)));
+        self.bot.logger.debug("segreteria.load: ", JSON.stringify(self.bot.brain.get(self.key)));
         var loaded = self.bot.brain.get(self.key);
         if (!loaded || loaded == "") {
             return {};
         }
-        return loaded;
+        return JSON.parse(loaded);
     }
 
     this.messageForMe = function (usr, all) {
@@ -50,7 +50,7 @@ function Segreteria(robot) {
             return false;
         }
         if (!all && self.data[usr].read) {
-          return false;
+            return false;
         }
         return self.data[usr];
     }
@@ -70,8 +70,8 @@ function Segreteria(robot) {
             return "Nessun messaggio";
         }
         var msg = "";
-        for(var i = 0; i < msgs.length; i++) {
-            var it =msgs[i];
+        for (var i = 0; i < msgs.length; i++) {
+            var it = msgs[i];
             msg += (it.letto ? "*" : " ") +
                 " da: " + it.from + " il " + moment(it.when).format("LT l") + "\n" +
                 it.message;
@@ -108,7 +108,7 @@ function Segreteria(robot) {
         // self.bot.logger.debug("invia messaggio" , self.data);
 
         self.save();
-        self.bot.logger.debug("invia messaggio dopo save" , self.data);
+        self.bot.logger.debug("invia messaggio dopo save", self.data);
 
 
     }
@@ -130,9 +130,18 @@ function WarSpec(robot) {
 
     this.load = function (roomid) {
         if (!roomid) {
-            return self.bot.brain.get('warspec') || [];
+            var wdata = self.bot.brain.get('warspec');
+            if (!wdata) {
+                return [];
+            }
+            return JSON.parse(wdata);
         } else {
-            self.warspecs = self.bot.brain.get('warspec');
+            var wdata = self.bot.brain.get('warspec');
+            if (!wdata) {
+                self.warspec = [];
+            } else {
+                self.warspec = JSON.stringify(wdata);
+            }
             this.bot.logger.debug("WarSpec.load " + self.warspec);
             if (!self.warspecs)
                 self.warspecs = [];
@@ -148,13 +157,9 @@ function WarSpec(robot) {
         if (id) {
             self.warspecs[id] = data;
         }
-        if (warspecs) {
-            self.bot.brain.set('warspec', warspecs);
-            self.bot.brain.save();
-            self.bot.logger.debug('warspec.save ' + JSON.stringify(warspecs));
-        } else {
-            throw new Error("warspec.save nessun dato");
-        }
+        self.bot.brain.set('warspec', JSON.stringify(warspecs));
+        self.bot.brain.save();
+        self.bot.logger.debug('warspec.save ' + JSON.stringify(warspecs));
     }
 
     this.remove = function (id) {
@@ -207,16 +212,15 @@ function WarSpec(robot) {
 }
 
 
-function DbCommand(robot) 
-{
+function DbCommand(robot) {
     var bot = robot;
-    this.set = function(key, value) {
+    this.set = function (key, value) {
         bot.brain.set(key, value);
     }
-    this.get = function(key) {
+    this.get = function (key) {
         return bot.brain.get(key);
     }
-    this.save = function() {
+    this.save = function () {
         bot.brain.save();
     }
 }
@@ -240,7 +244,7 @@ module.exports = function (robot) {
         robot.logger.debug("usr", res.message);
         if (segreteria.messageForMe(usr.name)) {
             res.reply("Ci sono messaggi per te!\n" +
-                    segreteria.getMessages(usr.name));
+                segreteria.getMessages(usr.name));
             segreteria.readAll(usr.name);
         } else {
             // res.reply("Nessun messaggio. " + self.segreteria.toString());
@@ -393,7 +397,7 @@ module.exports = function (robot) {
         res.reply("Messaggio per " + username + " archiviato.");
     });
 
- 
+
     robot.respond(/cancella messaggi/i, function (res) {
         var segreteria = new Segreteria(robot);
         var db = segreteria.messageForMe(res.message.user.name);
@@ -406,22 +410,22 @@ module.exports = function (robot) {
 
     });
 
-    robot.respond(/set (\w+) (.*)$/i, function(res) {
+    robot.respond(/set (\w+) (.*)$/i, function (res) {
         var db = new DbCommand(robot);
         var key = res.match[1];
         var value = res.match[2];
-        db.set(key,value);
+        db.set(key, value);
         res.reply("Ok.");
     });
 
-    robot.respond(/get (\w+)/i, function(res) {
+    robot.respond(/get (\w+)/i, function (res) {
         var key = res.match[1];
         var db = new DbCommand(robot);
         var value = db.get(key);
         res.reply(key, "=", value);
     });
 
-    robot.respond(/save/,function(res) {
+    robot.respond(/save/, function (res) {
         var db = new DbCommand(robot);
         db.save();
         res.reply("Ok");
