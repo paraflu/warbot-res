@@ -149,7 +149,7 @@ function WarSpec(robot) {
         }
         self.bot.logger.debug('warspec.save ',self.warspecs);
         self.bot.brain.set('warspec', JSON.stringify(self.warspecs));
-        self.bot.brain.save();-
+        self.bot.brain.save();
     }
 
     this.remove = function (id) {
