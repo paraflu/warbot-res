@@ -47,7 +47,7 @@ function Segreteria(robot) {
         if (!self.data || !self.data[usr]) {
             return false;
         }
-        if (!all && !self.data[usr].read) {
+        if (!all &&  self.data[usr].read) {
             return false;
         }
         return self.data[usr];
@@ -65,9 +65,9 @@ function Segreteria(robot) {
         var msg = "";
         for (var i = 0; i < msgs.length; i++) {
             var it = msgs[i];
-            msg += (it.letto ? "*" : " ") +
-                " " + it.from + " il " + moment(it.when).format("LT l") + " mi ha detto di riferirti " +
-                it.message;
+            msg += moment(it.when).format("LT l")  + ": " + (it.letto ? "*" : " ") +
+                it.from + " mi ha chiesto di riferirti " +
+                it.message + ".\n";
         }
         return msg;
     };
@@ -176,16 +176,19 @@ function WarSpec(robot) {
         var ora = moment();
         var msg = "";
         if (ora < inizio) {
-            msg += "C'è la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) + "\n";
+            msg += "C'è la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) + ". Fine della giornata dei preparativi alle " + 
+                fine_preparativi.format("dddd H:mm") + " fine della war alle " + fine_war.format("LT l") + ". ";
         } else if (ora < fine_preparativi) {
-            msg += "E' in corso una war, è il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + "\n";
+            msg += "E' in corso una war, è il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + ".\n";
         } else if (ora < fine_war) {
-            res += "E' il giorno degli eroi, ancora " + fine_war.format('LT l') + "\n";
+            res += "E' il giorno degli eroi, ancora " + fine_war.format('LT l') + ".\n";
         } else {
-            msg += "La war è finita alle " + (fine_war.format('LT l')) + "\n";
+            msg += "La war è finita alle " + (fine_war.format('LT l')) + ".\n";
         }
         if (data.strategia) {
-            msg += "Tattica: " + data.strategia + "\n";
+            msg += "*Tattica*: " + data.strategia + "\n";
+        } else {
+            msg += "Nessuna tattica indicata per ora."
         }
         return msg;
     }
@@ -197,6 +200,17 @@ function WarSpec(robot) {
 
     this.get = function(id) {
         return self.warspecs[id] || false;
+    }
+
+    this.watchclock = function(response, id) {
+        var data = self.warspecs[id];
+        var inizio = moment(data.start_at);
+        var fine_preparativi = moment(data.start_at).add(23, 'h');
+        var fine_war = moment(fine_preparativi).add(24, 'h');
+        var ora = moment();
+
+        var duration = moment.duration(fine_war.diff(ora));
+        return (duration);
     }
 
     this.toString = function () {
@@ -240,6 +254,19 @@ module.exports = function (robot) {
         var segreteria = new Segreteria(robot);
         var usr = res.message.user;
         // robot.logger.debug("usr", res.message);
+        var wdata = warspec.get(res.message.room);
+        var lastwarning = robot.brain.get('reminder') || {};
+        var roomid = res.message.room;
+        if (wdata) {
+            var difference = warspec.watchclock(res.message.room);
+            if (!lastwarning[roomid] || lastwarning[roomid].add(15,'minute') < ora || difference.asHours() < 1) {
+                if (difference.asHours() > 1 ) {
+                    res.reply("*Vorrei ricordare a tutti che mancano " + difference.asHours() + "ore!*");
+                } else {
+                    res.reply("*Attenzione: mancano " + difference.asMinutes() + " minuti.*");
+                }
+            }
+        }
         if (segreteria.messageForMe(usr.name, false)) {
             res.reply("Ci sono messaggi per te!\n" +
                 segreteria.getMessages(usr.name));
@@ -250,9 +277,9 @@ module.exports = function (robot) {
         }
     });
 
-    robot.respond(/messaggi per me|ci sono messaggi|hai messaggi/i, function (res) {
+    robot.respond(/messaggi|messaggi per me|ci sono messaggi|hai messaggi/i, function (res) {
         var segreteria = new Segreteria(robot);
-        res.reply(segreteria.getMessages(res.message.user.name, true));
+        res.reply("Si eccoli:\n" + segreteria.getMessages(res.message.user.name, true));
         // self.segreteria.readAll(res.message.user.name);
     });
 
@@ -275,10 +302,14 @@ module.exports = function (robot) {
         if (wdata) {
             res.reply(wdata.user + " la sta avviando...");
         } else {
+            var startAt = moment(res.match[3], 'h');
+            if (startAt < moment()) {
+                startAt.add(1,'day');
+            }
             var ws = {
                 user: res.message.user.name,
                 when: new Date(),
-                start_at: moment(res.match[3], 'h').toDate()
+                start_at: startAt.toDate()
             };
             robot.logger.debug("prima del save");
             warspec.add(res.message.room, ws);
@@ -351,6 +382,10 @@ module.exports = function (robot) {
         res.reply(warspec.status(res.message.room));
     });
 
+    robot.respond(/ciao/i, function(res) {
+        res.reply("Ciao " + res.message.user.name);
+    });
+
     // robot.hear(/ciao/i, function (res) {
     //     var segreteria = new Segreteria(robot);
     //     var msg = "ciao " + res.message.user.name;
@@ -363,7 +398,7 @@ module.exports = function (robot) {
 
     robot.respond(/la strategia è (.*)/i, function (res) {
         var warspec = new WarSpec(robot);
-        var wdata = warspec.load(res.message.room);
+        var wdata = warspec.get(res.message.room);
         if (wdata) {
             wdata.strategia = res.match[1];
             warspec.save(res.message.room, wdata);
