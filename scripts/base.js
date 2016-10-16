@@ -173,7 +173,7 @@ function WarSpec(robot) {
 
         var inizio = moment(data.start_at);
         var fine_preparativi = moment(data.start_at).add(23, 'h');
-        var fine_war = moment(fine_preparativi).add(24, 'h');
+        var fine_war = moment(data.start_at).add(24+23, 'h');
         var ora = moment();
         var msg = "";
         if (ora < inizio) {
@@ -206,7 +206,7 @@ function WarSpec(robot) {
         var data = self.warspecs[id];
         var inizio = moment(data.start_at);
         var fine_preparativi = moment(data.start_at).add(23, 'h');
-        var fine_war = moment(fine_preparativi).add(24, 'h');
+        var fine_war = moment(data.start_at).add(24+23, 'h');
         var ora = moment();
 
         var duration = {
@@ -373,6 +373,7 @@ module.exports = function (robot) {
         } else {
             res.reply("Ok!");
             warspec.remove(res.message.room);
+            warspec.save();
         }
     });
 
@@ -464,7 +465,7 @@ module.exports = function (robot) {
 
     robot.respond(/cancella messaggi/i, function (res) {
         var segreteria = new Segreteria(robot);
-        var db = segreteria.messageForMe(res.message.user.name);
+        var db = segreteria.messageForMe(res.message.user.name, true );
         if (db) {
             res.reply("Cancellati " + db.messages.length + " messaggi.");
             segreteria.empty(res.message.user.name);
