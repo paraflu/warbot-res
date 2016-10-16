@@ -44,14 +44,10 @@ function Segreteria(robot) {
     }
 
     this.messageForMe = function (usr, all) {
-        // if (!this.data) {
-        //     this.data = this.load();
-        // }
-        // self.bot.logger.debug("self.data " + self.data  + " self.data[usr.name] " + self.data[usr]);
         if (!self.data || !self.data[usr]) {
             return false;
         }
-        if (!all && self.data[usr].read) {
+        if (!all && !self.data[usr].read) {
             return false;
         }
         return self.data[usr];
@@ -244,7 +240,7 @@ module.exports = function (robot) {
         var segreteria = new Segreteria(robot);
         var usr = res.message.user;
         // robot.logger.debug("usr", res.message);
-        if (segreteria.messageForMe(usr.name)) {
+        if (segreteria.messageForMe(usr.name, false)) {
             res.reply("Ci sono messaggi per te!\n" +
                 segreteria.getMessages(usr.name));
             segreteria.readAll(usr.name);
