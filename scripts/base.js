@@ -266,18 +266,18 @@ module.exports = function (robot) {
         if (wdata) {
             var difference = warspec.watchclock(res.message.room);
             robot.logger.info(lastwarning[roomid]);
-            if (!lastwarning[roomid] || (lastwarning[roomid].add(1, 'minute') < ora) || difference.fine_war.asHours() < 1) {
+            if (!lastwarning[roomid] || (lastwarning[roomid].add(15, 'minute') < ora) || difference.fine_war.asHours() < 1) {
                 lastwarning[roomid] = moment();
                 var msg = "*Vorrei ricordare a tutti che mancano " ;
                 if (difference.inizio_war.asHours() > 0) {
-                    msg += difference.inizio_war.asHours() + " ore all'inizio del giorno dei preparativi.";
+                    msg += Math.floor(difference.inizio_war.asHours()) + " ore all'inizio del giorno dei preparativi.";
                 } else if (difference.fine_preparativi.asHours() > 0) {
-                    msg += difference.fine_preparativi.asHours() + " ore alla fine del giorno dei preparativi.";
+                    msg += Math.floor(difference.fine_preparativi.asHours()) + " ore alla fine del giorno dei preparativi.";
                 } else {
                     if (difference.fine_war.asHours() > 1) {
-                        msg += difference.fine_war.asHours() + " ore alla fine della war.";
+                        msg += Math.floor(difference.fine_war.asHours()) + " ore alla fine della war.";
                     } else {
-                        msg += difference.fine_war.asHours() + " minuti alla fine della war.";
+                        msg += Math.floor(difference.fine_war.asHours()) + " minuti alla fine della war.";
                     }
                     
                 }
