@@ -209,7 +209,11 @@ function WarSpec(robot) {
         var fine_war = moment(fine_preparativi).add(24, 'h');
         var ora = moment();
 
-        var duration = moment.duration(fine_war.diff(ora));
+        var duration = {
+            inizio_war: moment.duration(inizio.diff(ora)),
+            fine_preparativi: moment.duration(fine_preparativi.diff(ora)),
+            fine_war: moment.duration(fine_war.diff(ora))
+        };
         return (duration);
     }
 
@@ -262,13 +266,22 @@ module.exports = function (robot) {
         if (wdata) {
             var difference = warspec.watchclock(res.message.room);
             robot.logger.info(lastwarning[roomid]);
-            if (!lastwarning[roomid] || (lastwarning[roomid].add(1, 'minute') < ora) || difference.asHours() < 1) {
+            if (!lastwarning[roomid] || (lastwarning[roomid].add(1, 'minute') < ora) || difference.fine_war.asHours() < 1) {
                 lastwarning[roomid] = moment();
-                if (difference.asHours() > 1) {
-                    res.reply("*Vorrei ricordare a tutti che mancano " + Math.floor(difference.asHours()) + " ore!*");
+                var msg = "*Vorrei ricordare a tutti che mancano " ;
+                if (difference.inizio_war.asHours() > 0) {
+                    msg += difference.inizio_war.asHours() + " ore all'inizio del giorno dei preparativi.";
+                } else if (difference.fine_preparativi.asHours() > 0) {
+                    msg += difference.fine_preparativi.asHours() + " ore alla fine del giorno dei preparativi.";
                 } else {
-                    res.reply("*Attenzione: mancano " + Math.floor(difference.asMinutes()) + " minuti.*");
+                    if (difference.fine_war.asHours() > 1) {
+                        msg += difference.fine_war.asHours() + " ore alla fine della war.";
+                    } else {
+                        msg += difference.fine_war.asHours() + " minuti alla fine della war.";
+                    }
+                    
                 }
+                res.reply( msg + "*");
                 robot.brain.save();
             }
         }
