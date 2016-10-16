@@ -70,7 +70,7 @@ function Segreteria(robot) {
         for (var i = 0; i < msgs.length; i++) {
             var it = msgs[i];
             msg += (it.letto ? "*" : " ") +
-                " da: " + it.from + " il " + moment(it.when).format("LT l") + "\n" +
+                " " + it.from + " il " + moment(it.when).format("LT l") + " mi ha detto di riferirti " +
                 it.message;
         }
         return msg;
@@ -354,15 +354,15 @@ module.exports = function (robot) {
         res.reply(warspec.status(res.message.room));
     });
 
-    robot.hear(/ciao/i, function (res) {
-        var segreteria = new Segreteria(robot);
-        var msg = "ciao " + res.message.user.name;
-        if (segreteria.messageForMe(res.message.user.name)) {
-            msg += segreteria.getMessages(res.message.user.name);
-            segreteria.readAll(res.message.user.name)
-        }
-        res.reply(msg);
-    });
+    // robot.hear(/ciao/i, function (res) {
+    //     var segreteria = new Segreteria(robot);
+    //     var msg = "ciao " + res.message.user.name;
+    //     if (segreteria.messageForMe(res.message.user.name)) {
+    //         msg += segreteria.getMessages(res.message.user.name);
+    //         segreteria.readAll(res.message.user.name)
+    //     }
+    //     res.reply(msg);
+    // });
 
     robot.respond(/la strategia è (.*)/i, function (res) {
         var warspec = new WarSpec(robot);
