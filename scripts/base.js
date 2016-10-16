@@ -298,10 +298,11 @@ module.exports = function (robot) {
 
     robot.respond(/messaggi|messaggi per me|ci sono messaggi|hai messaggi/i, function (res) {
         var segreteria = new Segreteria(robot);
+        var usr = res.message.user;
         if (segreteria.messageForMe(usr.name, false)) {
-          res.reply("Si eccoli:\n" + segreteria.getMessages(res.message.user.name, true));
+          res.reply("Si eccoli:\n" + segreteria.getMessages(usr.name, true));
         } else {
-        	res.reply("No, non ci sono messaggi al momento.");
+        	res.reply("No, non ci sono messaggi al momento");
         }
         // self.segreteria.readAll(res.message.user.name);
     });
