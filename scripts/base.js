@@ -364,7 +364,7 @@ module.exports = function (robot) {
         var msg = "ciao " + res.message.user.name;
         if (segreteria.messageForMe(res.message.user.name)) {
             msg += segreteria.getMessages(res.message.user.name);
-            // self.segreteria.readAll(res.message.user.name)
+            segreteria.readAll(res.message.user.name)
         }
         res.reply(msg);
     });
