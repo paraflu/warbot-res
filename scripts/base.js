@@ -15,7 +15,9 @@ var hasProp = {}.hasOwnProperty;
 
 var moment = require('moment'),
     _ = require('lodash'),
-    util = require('util');
+    util = require('util'),
+    clashApi = require('clash-of-clans-api');
+
 
 moment.locale('it');
 
@@ -126,31 +128,38 @@ function Segreteria(robot) {
 function WarSpec(robot) {
     var self = this;
     this.bot = robot;
-    this.warspecs = [];
+    this.warspecs = {};
 
-    this.load = function (roomid) {
-        var wdata = self.bot.brain.get('warspec');
-        var wspecs = [];
-        if (!wdata || wdata == "") {
-            wspecs = [];
-        } else {
-            wspecs = JSON.parse(wdata);
-        }
+    this.load = function () {
+        // var wdata = self.bot.brain.get('warspec');
+        // var wspecs = {};
+        // if (!wdata || wdata == "") {
+        //     wspecs = {};
+        // } else {
+        //     wspecs = JSON.parse(wdata);
+        // }
 
-        if (roomid) {
-            return wspecs[roomid];
-        } else {
-            return wspecs;
-        }
+        // if (roomid) {
+        //     return wspecs[roomid];
+        // } else {
+        //     return wspecs;
+        // }
+        self.warspecs = self.bot.brain.get('war.spec') || {};
+        self.bot.logger.debug("load:",self.warspecs);
     }
 
-    this.save = function (id, data) {
-        self.bot.logger.debug("save" + id + "=" + data);
+    this.save = function () {
+        // self.bot.logger.debug("warspec type " + typeof(self.warspecs));
         // if (id !== undefined) {
-            self.warspecs[id] = data;
+        //     self.warspecs[id] = data;
+        //     self.bot.logger.debug("save", JSON.stringify(self.warspecs[id]),
+        //         " json ", JSON.stringify(self.warspecs));
         // }
-        self.bot.logger.debug('warspec.save ',JSON.stringify(self.warspecs));
-        self.bot.brain.set('warspec', JSON.stringify(self.warspecs));
+        // self.bot.logger.debug('warspec.save ',JSON.stringify(self.warspecs));
+        // self.bot.brain.set('warspec', JSON.stringify(self.warspecs));
+        // self.bot.brain.save();
+        self.bot.logger.debug("warspecs:",JSON.stringify(self.warspecs));
+        self.bot.brain.set('war.spec', self.warspecs);
         self.bot.brain.save();
     }
 
@@ -190,12 +199,21 @@ function WarSpec(robot) {
         return msg;
     }
 
+    this.add = function(id, data)
+    {
+        self.warspecs[id] = data;
+    }
+
+    this.get = function(id) {
+        return self.warspecs[id] || false;
+    }
+
     this.toString = function () {
         return "warspec.class:" + this.warspecs;
     }
 
     // robot.logger.debug("load>");
-    self.warspecs = this.load();
+    this.load();
     // robot.logger.debug(self.warspecs);
 }
 
@@ -261,7 +279,7 @@ module.exports = function (robot) {
 
     robot.respond(/(avvia|programma) (war|guerra) alle (\d+)/i, function (res) {
         var warspec = new WarSpec(robot);
-        var wdata = warspec.load(res.message.room);
+        var wdata = warspec.get(res.message.room);
         if (wdata) {
             res.reply(wdata.user + " la sta avviando...");
         } else {
@@ -270,21 +288,24 @@ module.exports = function (robot) {
                 when: new Date(),
                 start_at: moment(res.match[3], 'h').toDate()
             };
+            robot.logger.debug("prima del save");
+            warspec.add(res.message.room, ws);
+            warspec.save();
             res.reply("Ok, progammata per le " + (moment(ws.start_at).format('LT l')) + "!");
-            warspec.save(res.message.room, ws);
         }
     });
 
     robot.respond(/start war|avvia (war|guerra)$|avviamo.*war$/i, function (res) {
         var warspec = new WarSpec(robot);
-        var wdata = warspec.load(res.message.room);
+        var wdata = warspec.get(res.message.room);
         if (!wdata) {
             wdata = {
                 user: res.message.user.name,
                 when: new Date()
             };
             res.reply("Ok, quando la lanci?");
-            warspec.save(res.message.room, wdata);
+            warspec.add(res.message.room, wdata);
+            warspec.save();
         } else {
             res.reply(wdata.user + " la sta avviando... messaggio delle " + (moment(wdata.start_at).format('LT l')));
         }
@@ -292,11 +313,11 @@ module.exports = function (robot) {
 
     robot.respond(/alle (\d+)/i, function (res) {
         var warspec = new WarSpec(robot);
-        var wdata = warspec.load(res.message.room);
+        var wdata = warspec.get(res.message.room);
         if (wdata) {
             wdata.start_at = moment(res.match[1], 'h').toDate();
             res.reply("ok " + res.message.user + " avviamo alle " + (moment(wdata.start_at).format('LT l')));
-            warspec.save(res.message.room, wdata);
+            warspec.set(res.message.room, wdata);
         } else {
             res.reply("Nessuna war programmata.");
         }
@@ -304,7 +325,7 @@ module.exports = function (robot) {
 
     robot.respond(/cancella war/i, function (res) {
         var warspec = new WarSpec(robot);
-        var wdata = warspec.load(res.message.room);
+        var wdata = warspec.get(res.message.room);
         if (!wdata) {
             res.reply("non ci sono guerre in programma...");
         } else {
@@ -417,5 +438,14 @@ module.exports = function (robot) {
         var db = new DbCommand(robot);
         db.save();
         res.reply("Ok");
-    })
+    });
+
+    robot.respond(/clan_status/, function(res) {
+        robot.logger.debug("TOKEN" + process.env.COCTOKEN);
+        var client =  clashApi({token: process.env.COCTOKEN});
+        client
+        .clanMembersByTag('#9YLQ9PQP')
+        .then(response => res.reply(resonse))
+        .cache(error => res.reply("Errore:" + error))
+    });
 };
