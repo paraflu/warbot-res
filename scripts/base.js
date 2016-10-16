@@ -260,7 +260,8 @@ module.exports = function (robot) {
         var roomid = res.message.room;
         if (wdata) {
             var difference = warspec.watchclock(res.message.room);
-            if (!lastwarning[roomid] || lastwarning[roomid].add(15,'minute') < ora || difference.asHours() < 1) {
+            if (lastwarning[roomid] && (lastwarning[roomid].add(15,'minute') < ora) || difference.asHours() < 1) {
+                lastwarning[roomid] = moment();
                 if (difference.asHours() > 1 ) {
                     res.reply("*Vorrei ricordare a tutti che mancano " + difference.asHours() + "ore!*");
                 } else {
