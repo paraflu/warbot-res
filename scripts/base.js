@@ -58,12 +58,7 @@ function Segreteria(robot) {
     }
 
     this.readAll = function (usr) {
-        // if (!this.data) {
-        //     this.data = this.load();
-        // }
-        if (this.messageForMe(usr, false)) {
-            self.data[usr].read = true;
-        }
+        self.data[usr].read = true;
     }
 
     this.getMessages = function (user, all) {
