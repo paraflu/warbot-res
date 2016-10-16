@@ -266,8 +266,8 @@ module.exports = function (robot) {
         if (wdata) {
             var difference = warspec.watchclock(res.message.room);
             robot.logger.info(lastwarning[roomid]);
-            if (!lastwarning[roomid] || (lastwarning[roomid].add(15, 'minute') < ora) || difference.fine_war.asHours() < 1) {
-                lastwarning[roomid] = moment();
+            if (!lastwarning[roomid] || (moment(lastwarning[roomid]).add(15, 'minute') < ora) || difference.fine_war.asHours() < 1) {
+                lastwarning[roomid] = moment().toDate();
                 var msg = "*Vorrei ricordare a tutti che mancano " ;
                 if (difference.inizio_war.asHours() > 0) {
                     msg += Math.floor(difference.inizio_war.asHours()) + " ore all'inizio del giorno dei preparativi.";
