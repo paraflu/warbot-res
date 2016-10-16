@@ -252,6 +252,7 @@ module.exports = function (robot) {
 
     robot.respond(/.*/, function (res) {
         var segreteria = new Segreteria(robot);
+        var warspec = new WarSpec(robot);
         var usr = res.message.user;
         // robot.logger.debug("usr", res.message);
         var wdata = warspec.get(res.message.room);
