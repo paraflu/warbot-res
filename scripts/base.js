@@ -244,6 +244,7 @@ module.exports = function (robot) {
             res.reply("Ci sono messaggi per te!\n" +
                 segreteria.getMessages(usr.name));
             segreteria.readAll(usr.name);
+            segreteria.save();
         } else {
             // res.reply("Nessun messaggio. " + self.segreteria.toString());
         }
