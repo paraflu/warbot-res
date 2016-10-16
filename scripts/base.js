@@ -282,6 +282,7 @@ module.exports = function (robot) {
                     
                 }
                 res.reply( msg + "*");
+                robot.brain.set('reminder', lastwarning);
                 robot.brain.save();
             }
         }
