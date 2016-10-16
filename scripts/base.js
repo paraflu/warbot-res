@@ -445,7 +445,7 @@ module.exports = function (robot) {
         var client =  clashApi({token: process.env.COCTOKEN});
         client
         .clanMembersByTag('#9YLQ9PQP')
-        .then(response => res.reply(resonse))
-        .cache(error => res.reply("Errore:" + error))
+        .then(function(response) {res.reply(resonse)})
+        .cache(function(error) {res.reply("Errore:" + error)});
     });
 };
