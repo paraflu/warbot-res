@@ -202,7 +202,7 @@ function WarSpec(robot) {
         return self.warspecs[id] || false;
     }
 
-    this.watchclock = function(response, id) {
+    this.watchclock = function(id) {
         var data = self.warspecs[id];
         var inizio = moment(data.start_at);
         var fine_preparativi = moment(data.start_at).add(23, 'h');
