@@ -254,7 +254,7 @@ module.exports = function (robot) {
         }
     });
 
-    robot.respond(/.*/, function (res) {
+    robot.hear(/.*/, function (res) {
         var segreteria = new Segreteria(robot);
         var warspec = new WarSpec(robot);
         var usr = res.message.user;
@@ -407,7 +407,7 @@ module.exports = function (robot) {
         res.reply(warspec.status(res.message.room));
     });
 
-    robot.hear(/ciao/i, function (res) {
+  /*  robot.hear(/./, function (res) {
         if (!res.match["@warbotres"]) {
             var segreteria = new Segreteria(robot);
             if (segreteria.messageForMe(res.message.user.name)) {
@@ -417,7 +417,7 @@ module.exports = function (robot) {
                 res.reply(msg);
             }
         }
-    });
+    }); */
 
     robot.respond(/ciao/i, function (res) {
         var segreteria = new Segreteria(robot);
