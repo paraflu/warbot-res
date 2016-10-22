@@ -175,7 +175,7 @@ function WarSpec(robot) {
         var fine_preparativi = moment(data.start_at).add(23, 'h');
         var fine_war = moment(data.start_at).add(24+23, 'h');
         var ora = moment();
-        var msg = "";
+        var msg = "sono le " + ora.format() + " ";
         if (ora < inizio) {
             msg += "C'è la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) + ". Fine della giornata dei preparativi alle " +
                 fine_preparativi.format("dddd H:mm") + " fine della war alle " + fine_war.format("LT l") + ". ";
