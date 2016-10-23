@@ -23,7 +23,7 @@
     "hubot-shipit": "^0.2.0",
     "hubot-telegram": "^0.1.2",
     "lodash": "^4.16.4",
-    "moment": "^2.15.1",
+    "moment-timezone": "^0.5.7",
     "sprintf-js": "^1.0.3"
   },
   "engines": {

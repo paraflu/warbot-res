@@ -13,13 +13,14 @@
 
 var hasProp = {}.hasOwnProperty;
 
-var moment = require('moment'),
+var moment = require('moment-timezone');
     _ = require('lodash'),
     util = require('util'),
     clashApi = require('clash-of-clans-api'),
     sprintf = require('sprintf-js').sprintf;
 
 
+moment.tz.setDefault("Europe/Rome");
 moment.locale('it');
 
 function Segreteria(robot) {
