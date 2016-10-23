@@ -23,6 +23,14 @@ var moment = require('moment-timezone');
 moment.tz.setDefault("Europe/Rome");
 moment.locale('it');
 
+function Privileges(robot) {
+
+    this.isAdmin = function(username) {
+        return (username.toLowerCase() == "paraflu");
+    }
+
+}
+
 function Segreteria(robot) {
 
     var self = this;
@@ -178,14 +186,14 @@ function WarSpec(robot) {
         var ora = moment();
         var msg = "";
         if (ora < inizio) {
-            msg += "C'è la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) + ". Fine della giornata dei preparativi alle " +
+            msg += "C'ï¿½ la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) + ". Fine della giornata dei preparativi alle " +
                 fine_preparativi.format("dddd H:mm") + " fine della war alle " + fine_war.format("LT l") + ". ";
         } else if (ora < fine_preparativi) {
-            msg += "E' in corso una war, è il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + ".\n";
+            msg += "E' in corso una war, ï¿½ il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + ".\n";
         } else if (ora < fine_war) {
             msg += "E' il giorno degli eroi, finisce il " + fine_war.format('LT l') + ".\n";
         } else {
-            msg += "La war è finita alle " + (fine_war.format('LT l')) + ".\n";
+            msg += "La war ï¿½ finita alle " + (fine_war.format('LT l')) + ".\n";
         }
         if (data.strategia) {
             msg += "*Tattica*: " + data.strategia + "\n";
@@ -242,6 +250,10 @@ function DbCommand(robot) {
     }
     this.save = function () {
         bot.brain.save();
+    }
+
+    this.del = function(key) {
+        bot.brain.remove(key);
     }
 }
 
@@ -485,6 +497,12 @@ module.exports = function (robot) {
     });
 
     robot.respond(/set (\w+) (.*)$/i, function (res) {
+        var auth = new Privileges(robot);
+        var username = res.message.user.name;
+        if (!auth.isAdmin(username)) {
+            res.reply("Non autorizzato.");
+            return;
+        }
         var db = new DbCommand(robot);
         var key = res.match[1];
         var value = res.match[2];
@@ -493,6 +511,12 @@ module.exports = function (robot) {
     });
 
     robot.respond(/get (\w+)/i, function (res) {
+        var auth = new Privileges(robot);
+        var username = res.message.user.name;
+        if (!auth.isAdmin(username)) {
+            res.reply("Non autorizzato.");
+            return;
+        }
         var key = res.match[1];
         var db = new DbCommand(robot);
         var value = db.get(key);
@@ -500,10 +524,30 @@ module.exports = function (robot) {
     });
 
     robot.respond(/save/, function (res) {
+        var auth = new Privileges(robot);
+        var username = res.message.user.name;
+        if (!auth.isAdmin(username)) {
+            res.reply("Non autorizzato.");
+            return;
+        }
         var db = new DbCommand(robot);
         db.save();
         res.reply("Ok");
     });
+
+    robot.respond(/del/, function (res) {
+        var auth = new Privileges(robot);
+        var username = res.message.user.name;
+        if (!auth.isAdmin(username)) {
+            res.reply("Non autorizzato.");
+            return;
+        }
+        var db = new DbCommand(robot);
+        var key = res.match[1];
+        db.del(key);
+        res.reply("Ok");
+    });
+
 
     robot.respond(/clan_status/, function (res) {
         robot.logger.debug("TOKEN" + process.env.COCTOKEN);
