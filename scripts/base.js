@@ -186,14 +186,15 @@ function WarSpec(robot) {
         var ora = moment();
         var msg = "";
         if (ora < inizio) {
-            msg += "C'� la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) + ". Fine della giornata dei preparativi alle " +
-                fine_preparativi.format("dddd H:mm") + " fine della war alle " + fine_war.format("LT l") + ". ";
+            msg += "C'è la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) +
+             ". Fine della giornata dei preparativi alle " +
+             fine_preparativi.format("dddd H:mm") + " fine della war alle " + fine_war.format("LT l") + ". ";
         } else if (ora < fine_preparativi) {
-            msg += "E' in corso una war, � il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + ".\n";
+            msg += "E' in corso una war, è il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + ".\n";
         } else if (ora < fine_war) {
-            msg += "E' il giorno degli eroi, finisce il " + fine_war.format('LT l') + ".\n";
+            msg += "E' il giorno degli eroi, finisce tra " + fine_war.fromNow('') + ".\n";
         } else {
-            msg += "La war � finita alle " + (fine_war.format('LT l')) + ".\n";
+            msg += "La war è finita alle " + (fine_war.format('LT l')) + ".\n";
         }
         if (data.strategia) {
             msg += "*Tattica*: " + data.strategia + "\n";
@@ -562,6 +563,6 @@ module.exports = function (robot) {
                 });
                 res.reply(msg + "\n");
             })
-            .catch(function (error) { res.reply("Errore:" + error) });
+            .catch(function (error) { res.reply("Errore:" + JSON.stringify(error)) });
     });
 };
