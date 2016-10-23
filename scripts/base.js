@@ -176,16 +176,16 @@ function WarSpec(robot) {
         var fine_preparativi = moment(data.start_at).add(23, 'h');
         var fine_war = moment(data.start_at).add(24+23, 'h');
         var ora = moment();
-        var msg = "sono le " + ora.format() + " ";
+        var msg = "";
         if (ora < inizio) {
-            msg += "C'Ã¨ la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) + ". Fine della giornata dei preparativi alle " +
+            msg += "C'è la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) + ". Fine della giornata dei preparativi alle " +
                 fine_preparativi.format("dddd H:mm") + " fine della war alle " + fine_war.format("LT l") + ". ";
         } else if (ora < fine_preparativi) {
-            msg += "E' in corso una war, Ã¨ il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + ".\n";
+            msg += "E' in corso una war, è il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + ".\n";
         } else if (ora < fine_war) {
-            msg += "E' il giorno degli eroi, ancora " + fine_war.format('LT l') + ".\n";
+            msg += "E' il giorno degli eroi, finisce il " + fine_war.format('LT l') + ".\n";
         } else {
-            msg += "La war Ã¨ finita alle " + (fine_war.format('LT l')) + ".\n";
+            msg += "La war è finita alle " + (fine_war.format('LT l')) + ".\n";
         }
         if (data.strategia) {
             msg += "*Tattica*: " + data.strategia + "\n";
@@ -209,6 +209,10 @@ function WarSpec(robot) {
         var fine_preparativi = moment(data.start_at).add(23, 'h');
         var fine_war = moment(data.start_at).add(24+23, 'h');
         var ora = moment();
+
+	if (ora > fine_war) {
+   	    return false;		
+	}	
 
         var duration = {
             inizio_war: moment.duration(inizio.diff(ora)),
@@ -266,23 +270,23 @@ module.exports = function (robot) {
         var ora = moment();
         if (wdata) {
             var difference = warspec.watchclock(res.message.room);
-            robot.logger.info(lastwarning[roomid]);
-            if (!lastwarning[roomid] || (moment(lastwarning[roomid]).add(15, 'minute') < ora) || difference.fine_war.asHours() < 1) {
-                lastwarning[roomid] = moment().toDate();
-                var msg = "*Vorrei ricordare a tutti che mancano " ;
-                if (difference.inizio_war.asHours() > 0) {
-                    msg += Math.floor(difference.inizio_war.asHours()) + " ore all'inizio del giorno dei preparativi.";
-                } else if (difference.fine_preparativi.asHours() > 0) {
-                    msg += Math.floor(difference.fine_preparativi.asHours()) + " ore alla fine del giorno dei preparativi.";
-                } else {
-                    if (difference.fine_war.asHours() > 1) {
-                        msg += Math.floor(difference.fine_war.asHours()) + " ore alla fine della war.";
-                    } else {
-                        msg += Math.floor(difference.fine_war.asHours()) + " minuti alla fine della war.";
-                    }
-                    
-                }
-                res.reply( msg + "*");
+            if (!lastwarning[roomid] || (moment(lastwarning[roomid]).add(1, 'hour') < ora) || difference.fine_war.asHours() < 1) {
+                if (difference.fine_war.asMinutes() > 0) {
+			lastwarning[roomid] = moment().toDate();
+			var msg = "*Vorrei ricordare a tutti che mancano " ;
+			if (difference.inizio_war.asHours() > 0) {
+			    msg += Math.floor(difference.inizio_war.asHours()) + " ore all'inizio del giorno dei preparativi.";
+			} else if (difference.fine_preparativi.asHours() > 0) {
+			    msg += Math.floor(difference.fine_preparativi.asHours()) + " ore alla fine del giorno dei preparativi.";
+			} else {
+			    if (difference.fine_war.asHours() > 1) {
+				msg += Math.floor(difference.fine_war.asHours()) + " ore alla fine della war.";
+			    } else {
+				msg += Math.floor(difference.fine_war.asMinutes()) + " minuti alla fine della war.";
+			    }
+			}
+			res.send( msg + "*");
+		}
                 robot.brain.set('reminder', lastwarning);
                 robot.brain.save();
             }
