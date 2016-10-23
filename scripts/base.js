@@ -183,7 +183,7 @@ function WarSpec(robot) {
         } else if (ora < fine_preparativi) {
             msg += "E' in corso una war, è il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + ".\n";
         } else if (ora < fine_war) {
-            res += "E' il giorno degli eroi, ancora " + fine_war.format('LT l') + ".\n";
+            msg += "E' il giorno degli eroi, ancora " + fine_war.format('LT l') + ".\n";
         } else {
             msg += "La war è finita alle " + (fine_war.format('LT l')) + ".\n";
         }
