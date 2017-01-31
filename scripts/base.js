@@ -14,7 +14,7 @@
 var hasProp = {}.hasOwnProperty;
 
 var moment = require('moment-timezone');
-    _ = require('lodash'),
+_ = require('lodash'),
     util = require('util'),
     clashApi = require('clash-of-clans-api'),
     sprintf = require('sprintf-js').sprintf;
@@ -25,7 +25,7 @@ moment.locale('it');
 
 function Privileges(robot) {
 
-    this.isAdmin = function(username) {
+    this.isAdmin = function (username) {
         return (username.toLowerCase() == "paraflu");
     }
 
@@ -182,13 +182,13 @@ function WarSpec(robot) {
 
         var inizio = moment(data.start_at);
         var fine_preparativi = moment(data.start_at).add(23, 'h');
-        var fine_war = moment(data.start_at).add(24+23, 'h');
+        var fine_war = moment(data.start_at).add(24 + 23, 'h');
         var ora = moment();
         var msg = "";
         if (ora < inizio) {
             msg += "C'è la war programmata da " + data.user + " per le " + (moment(data.start_at).format('LT l')) +
-             ". Fine della giornata dei preparativi alle " +
-             fine_preparativi.format("dddd H:mm") + " fine della war alle " + fine_war.format("LT l") + ". ";
+                ". Fine della giornata dei preparativi alle " +
+                fine_preparativi.format("dddd H:mm") + " fine della war alle " + fine_war.format("LT l") + ". ";
         } else if (ora < fine_preparativi) {
             msg += "E' in corso una war, è il giorno dei preparativi, termina alle " + (fine_preparativi.format('LT l')) + ".\n";
         } else if (ora < fine_war) {
@@ -216,12 +216,12 @@ function WarSpec(robot) {
         var data = self.warspecs[id];
         var inizio = moment(data.start_at);
         var fine_preparativi = moment(data.start_at).add(23, 'h');
-        var fine_war = moment(data.start_at).add(24+23, 'h');
+        var fine_war = moment(data.start_at).add(24 + 23, 'h');
         var ora = moment();
 
-	if (ora > fine_war) {
-   	    return false;		
-	}	
+        if (ora > fine_war) {
+            return false;
+        }
 
         var duration = {
             inizio_war: moment.duration(inizio.diff(ora)),
@@ -253,7 +253,7 @@ function DbCommand(robot) {
         bot.brain.save();
     }
 
-    this.del = function(key) {
+    this.del = function (key) {
         bot.brain.remove(key);
     }
 }
@@ -282,26 +282,32 @@ module.exports = function (robot) {
         var roomid = res.message.room;
         var ora = moment();
         if (wdata) {
-            var difference = warspec.watchclock(res.message.room);
-            if (!lastwarning[roomid] || (moment(lastwarning[roomid]).add(1, 'hour') < ora) || difference.fine_war.asHours() < 1) {
-                if (difference.fine_war.asMinutes() > 0) {
-			lastwarning[roomid] = moment().toDate();
-			var msg = "*Vorrei ricordare a tutti che mancano " ;
-			if (difference.inizio_war.asHours() > 0) {
-			    msg += Math.floor(difference.inizio_war.asHours()) + " ore all'inizio del giorno dei preparativi.";
-			} else if (difference.fine_preparativi.asHours() > 0) {
-			    msg += Math.floor(difference.fine_preparativi.asHours()) + " ore alla fine del giorno dei preparativi.";
-			} else {
-			    if (difference.fine_war.asHours() > 1) {
-				msg += Math.floor(difference.fine_war.asHours()) + " ore alla fine della war.";
-			    } else {
-				msg += Math.floor(difference.fine_war.asMinutes()) + " minuti alla fine della war.";
-			    }
-			}
-			res.send( msg + "*");
-		}
-                robot.brain.set('reminder', lastwarning);
-                robot.brain.save();
+            try {
+                var difference = warspec.watchclock(res.message.room);
+                if (!lastwarning[roomid] || (moment(lastwarning[roomid]).add(1, 'hour') < ora) || difference.fine_war.asHours() < 1) {
+                    if (difference.fine_war.asMinutes() > 0) {
+                        lastwarning[roomid] = moment().toDate();
+                        var msg = "*Vorrei ricordare a tutti che mancano ";
+                        if (difference.inizio_war.asHours() > 0) {
+                            msg += Math.floor(difference.inizio_war.asHours()) + " ore all'inizio del giorno dei preparativi.";
+                        } else if (difference.fine_preparativi.asHours() > 0) {
+                            msg += Math.floor(difference.fine_preparativi.asHours()) + " ore alla fine del giorno dei preparativi.";
+                        } else {
+                            if (difference.fine_war.asHours() > 1) {
+                                msg += Math.floor(difference.fine_war.asHours()) + " ore alla fine della war.";
+                            } else {
+                                msg += Math.floor(difference.fine_war.asMinutes()) + " minuti alla fine della war.";
+                            }
+                        }
+                        res.send(msg + "*");
+
+                    }
+                    robot.brain.set('reminder', lastwarning);
+                    robot.brain.save();
+
+                }
+            } catch (ex) {
+                robot.brain.remove('reminder');
             }
         }
         if (segreteria.messageForMe(usr.name, false)) {
@@ -318,9 +324,9 @@ module.exports = function (robot) {
         var segreteria = new Segreteria(robot);
         var usr = res.message.user;
         if (segreteria.messageForMe(usr.name, false)) {
-          res.reply("Si eccoli:\n" + segreteria.getMessages(usr.name, true));
+            res.reply("Si eccoli:\n" + segreteria.getMessages(usr.name, true));
         } else {
-        	res.reply("No, non ci sono messaggi al momento");
+            res.reply("No, non ci sono messaggi al momento");
         }
         // self.segreteria.readAll(res.message.user.name);
     });
@@ -425,17 +431,17 @@ module.exports = function (robot) {
         res.reply(warspec.status(res.message.room));
     });
 
-  /*  robot.hear(/./, function (res) {
-        if (!res.match["@warbotres"]) {
-            var segreteria = new Segreteria(robot);
-            if (segreteria.messageForMe(res.message.user.name)) {
-                var msg = "ciao " + res.message.user.name + " ho dei messaggi per te!\n";
-                msg += segreteria.getMessages(res.message.user.name);
-                segreteria.readAll(res.message.user.name);
-                res.reply(msg);
-            }
-        }
-    }); */
+    /*  robot.hear(/./, function (res) {
+          if (!res.match["@warbotres"]) {
+              var segreteria = new Segreteria(robot);
+              if (segreteria.messageForMe(res.message.user.name)) {
+                  var msg = "ciao " + res.message.user.name + " ho dei messaggi per te!\n";
+                  msg += segreteria.getMessages(res.message.user.name);
+                  segreteria.readAll(res.message.user.name);
+                  res.reply(msg);
+              }
+          }
+      }); */
 
     robot.respond(/ciao/i, function (res) {
         var segreteria = new Segreteria(robot);
@@ -488,7 +494,7 @@ module.exports = function (robot) {
 
     robot.respond(/cancella messaggi/i, function (res) {
         var segreteria = new Segreteria(robot);
-        var db = segreteria.messageForMe(res.message.user.name, true );
+        var db = segreteria.messageForMe(res.message.user.name, true);
         if (db) {
             res.reply("Cancellati " + db.messages.length + " messaggi.");
             segreteria.empty(res.message.user.name);
